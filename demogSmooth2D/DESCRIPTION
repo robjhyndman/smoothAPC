@@ -1,0 +1,13 @@
+Package: demogSmooth2D
+Version: 0.1
+Date: 2016-02-15
+Title: Smoothing of two-dimensional demographic data, optionally taking into account period and cohort effects
+Author: Alexander Dokumentov and Rob J. Hyndman
+Maintainer: Alexander Dokumentov <alexander.dokumentov@gmail.com>
+Depends: R (>= 3.2.2), quantreg, compiler, lmtest, stats, rgl, colorspace
+Description: The implemented method uses for smoothing bivariate thin plate splines, bivariate lasso-type regularization, and allows for both period and cohort effects. Thus the mortality rates are modelled as the sum of four components: a smooth bivariate function of age and time, smooth one-dimensional cohort effects, smooth one-dimensional period effects and random errors.
+License: GPL (>= 2)
+URL: http://www.robjhyndman.com/papers/bivariate-mortality-smoothing.pdf
+LazyData: true
+RoxygenNote: 5.0.1
+Suggests: testthat, demography

@@ -1,0 +1,417 @@
+require(compiler)
+require(quantreg)
+require(stats)
+require(lmtest)
+
+append.nc = function(env, val, i, j) {
+  b <- env$l + 1L
+  env$l <- env$l + length(val)
+  env$ra[b:env$l] <- val
+  env$ia[b:env$l] <- i
+  env$ja[b:env$l] <- j
+}
+
+append = cmpfun(append.nc)
+
+initialize.nc = function(env, nRows, nCols, len) {
+  env$d <- c(nRows, nCols)
+  env$ra <- numeric(len)
+  env$ia <- integer(len)
+  env$ja <- integer(len)
+  env$l <- 0L
+}
+
+initialize = cmpfun(initialize.nc)
+
+l1tp.getTargetVector = function(y, cohHelper, yearsHelper, effects)
+{
+  nAges = dim(y)[1]
+  nYears = dim(y)[2]
+
+  agesDiffLength = max(nAges-2, 0)*nYears
+  yearsDiffLength = nAges*max(nYears-2, 0)
+  agesYearsDiffLength = max(nAges-1, 0)*max(nYears-1, 0)
+  if(effects) {
+    yearsEffectDiffLength = yearsHelper$ldif
+    yearsEffectDistLength = yearsHelper$l
+    cohortDiffLength = cohHelper$ldif
+    cohortDistLength = cohHelper$l
+  }
+
+  return(
+    c(y, rep(0, agesDiffLength + yearsDiffLength + agesYearsDiffLength +
+      ifelse(effects, yearsEffectDiffLength + yearsEffectDistLength + cohortDiffLength + cohortDistLength, 0L)))
+  )
+}
+
+l1tp.unTargetVector = function(y, dims)
+{
+  t <- y[1:(dims[1]*dims[2])]
+  dim(t) <- dims
+  return(t)
+}
+
+l1tp.unTargetYearsEffect = function(y, dims, yearsHelper)
+{
+  offset <- dims[1]*dims[2]
+  t <- array(0, dims)
+  for(age in 1L:dims[1]) {
+    for(year in 1L:dims[2]) {
+      ind = yearsHelper$p[age, year]
+      if(ind > 0L) {
+        t[age, year] <- y[offset + ind]
+      }
+    }
+  }
+  return(t)
+}
+
+l1tp.unTargetCohortEffect = function(y, dims, cohHelper, yearsHelper)
+{
+  offset <- dims[1]*dims[2] + yearsHelper$l
+  t <- array(0, dims)
+  for(age in 1L:dims[1]) {
+    for(year in 1L:dims[2]) {
+      ind = cohHelper$p[age, year]
+      if(ind > 0L) {
+        t[age, year] <- y[offset + ind]
+      }
+    }
+  }
+  return(t)
+}
+
+P.nc = function(ageInd, yearInd, nAges, nYears)
+{
+  return(ageInd + (yearInd - 1L) * nAges)
+}
+
+P = cmpfun(P.nc)
+
+InvP = function(p, nAges, nYears)
+{
+  return(c((p-1L)%%nAges+1L, (p-1L)%/%nAges+1L))
+}
+
+getV.nc = function(ageInd, yearInd, nAges, nYears, cm, row, cohHelper, yearsHelper, effects)
+{
+  p = P(ageInd, yearInd, nAges, nYears)
+  append(cm, c(1), c(row), c(p))
+  if(effects) {
+    pp = yearsHelper$p[ageInd, yearInd]
+    if(pp > 0L) append(cm, c(1), c(row), c(nAges*nYears + pp))
+    ppp = cohHelper$p[ageInd, yearInd]
+    if(ppp > 0L) append(cm, c(1), c(row), c(nAges*nYears + yearsHelper$l + ppp))
+  }
+}
+
+getV = cmpfun(getV.nc)
+
+getVaa.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
+{
+  append(cm, c(-2*lambda, lambda, lambda), c(row, row, row),
+    c(P(ageInd, yearInd, nAges, nYears), P(ageInd - 1L, yearInd, nAges, nYears), P(ageInd + 1L, yearInd, nAges, nYears)))
+}
+
+getVaa = cmpfun(getVaa.nc)
+
+getVyy.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
+{
+  append(cm, c(-2*lambda, lambda, lambda), c(row, row, row),
+    c(P(ageInd, yearInd, nAges, nYears), P(ageInd, yearInd - 1L, nAges, nYears), P(ageInd, yearInd + 1L, nAges, nYears)))
+}
+
+getVyy = cmpfun(getVyy.nc)
+
+getVay.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
+{
+  append(cm, c(lambda, -lambda, -lambda, lambda), c(row, row, row, row),
+    c(P(ageInd, yearInd, nAges, nYears), P(ageInd, yearInd + 1L, nAges, nYears), P(ageInd + 1L, yearInd, nAges, nYears), P(ageInd + 1L, yearInd + 1L, nAges, nYears)))
+}
+
+getVay = cmpfun(getVay.nc)
+
+getVYearsaa.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row, yearsHelper)
+{
+  offset = nAges*nYears
+  append(cm, c(-2 * lambda, lambda, lambda), c(row, row, row),
+    c(offset + yearsHelper$p[ageInd, yearInd], offset + yearsHelper$p[ageInd - 1L, yearInd], offset + yearsHelper$p[ageInd + 1L, yearInd]))
+}
+
+getVYearsaa = cmpfun(getVYearsaa.nc)
+
+#It is to avoid singularity of the design matrix
+getVYearsDist.nc = function(ageInd, yearInd, nAges, nYears, theta, cm, row, yearsHelper)
+{
+  offset = nAges*nYears
+  append(cm, theta, row, offset + yearsHelper$p[ageInd, yearInd])
+}
+
+getVYearsDist = cmpfun(getVYearsDist.nc)
+
+
+getVCohortay.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row, cohHelper, yearsHelper)
+{
+  offset = nAges*nYears + yearsHelper$l
+  append(cm, c(-2 * lambda, lambda, lambda), c(row, row, row),
+    c(offset + cohHelper$p[ageInd, yearInd], offset + cohHelper$p[ageInd - 1L, yearInd - 1L], offset + cohHelper$p[ageInd + 1L, yearInd + 1L]))
+}
+
+getVCohortay = cmpfun(getVCohortay.nc)
+
+#It is to avoid singularity of the design matrix
+getVCohortDist.nc = function(ageInd, yearInd, nAges, nYears, theta, cm, row, cohHelper, yearsHelper)
+{
+  offset = nAges*nYears + yearsHelper$l
+  append(cm, theta, row, offset + cohHelper$p[ageInd, yearInd])
+}
+
+getVCohortDist = cmpfun(getVCohortDist.nc)
+
+PAA.nc = function(ageInd, yearInd, nAges, nYears)
+{
+  if(ageInd <= 1L || ageInd >= nAges)
+  {
+    return(-1L)
+  }
+  else {
+    return((ageInd - 1L) + (yearInd - 1L) * (nAges - 2L))
+  }
+}
+
+PAA = cmpfun(PAA.nc)
+
+PYY.nc = function(ageInd, yearInd, nAges, nYears)
+{
+  if(yearInd <= 1L || yearInd >= nYears)
+  {
+    return(-1L)
+  }
+  else {
+    return(ageInd + (yearInd - 2L) * nAges)
+  }
+}
+
+PYY = cmpfun(PYY.nc)
+
+PAY.nc = function(ageInd, yearInd, nAges, nYears)
+{
+  if(yearInd < 1L || yearInd >= nYears || ageInd < 1L || ageInd >= nAges)
+  {
+    return(-1L)
+  }
+  else {
+    return(ageInd + (yearInd - 1L) * (nAges - 1L))
+  }
+}
+
+PAY = cmpfun(PAY.nc)
+
+prepareCohHelper.nc = function(cohHelper, dims, cornerLength, affdDiagonals)
+{
+  nAges = dims[1]
+  nYears = dims[2]
+  cohHelper$pay = array(-1L, dims)
+  cohHelper$p = array(-1L, dims)
+  cay = 0L
+  c = 0L
+  if(is.null(affdDiagonals)) affdDiagonals = 1L:(nAges + nYears -1)
+  for(y in 1L:nYears) {
+    for(a in 1L:nAges) {
+      if((nAges - a + y > cornerLength) && (nYears - y + a > cornerLength) && ((nYears - y + a) %in% affdDiagonals))
+      {
+        if(a > 1L && a < nAges && y > 1L && y < nYears) {
+          cay <- cay + 1L
+          cohHelper$pay[a, y] <- cay
+        }
+        c <- c + 1L
+        cohHelper$p[a, y] <- c
+      }
+    }
+  }
+  cohHelper$ldif <- cay
+  cohHelper$l <- c
+}
+
+prepareCohHelper = cmpfun(prepareCohHelper.nc)
+
+prepareYearsHelper.nc = function(yearsHelper, dims, affdYears)
+{
+  nAges = dims[1]
+  nYears = dims[2]
+  yearsHelper$paa = array(-1L, dims)
+  yearsHelper$p = array(-1L, dims)
+  caa = 0L
+  c = 0L
+  if(is.null(affdYears)) affdYears = 1L:nYears
+  for(y in affdYears) {
+    for(a in 1L:nAges) {
+      if(a > 1L && a < nAges) {
+        caa <- caa + 1L
+        yearsHelper$paa[a, y] <- caa
+      }
+      c <- c + 1L
+      yearsHelper$p[a, y] <- c
+    }
+  }
+  yearsHelper$ldif <- caa
+  yearsHelper$l <- c
+}
+
+prepareYearsHelper = cmpfun(prepareYearsHelper.nc)
+
+l1tp.getDesignMatrix.nc = function(dims, lambda, lambdaaa, lambdayy, lambdaay, lambdaYearsEffect, thetaYearsEffect, lambdaCohortEffect, thetaCohortEffect, cornerLength, cohHelper, yearsHelper, effects)
+{
+  nAges = dims[1]
+  nYears = dims[2]
+
+  valuesLength = nAges*nYears
+  agesDiffLength = max(nAges-2L, 0L)*nYears
+  yearsDiffLength = nAges*max(nYears-2L, 0L)
+  agesYearsDiffLength = max(nAges-1L, 0L)*max(nYears-1L, 0L)
+  if(effects) {
+    yearsEffectDiffLength = yearsHelper$ldif
+    yearsEffectDistLength = yearsHelper$l
+    cohortDiffLength = cohHelper$ldif
+    cohortDistLength = cohHelper$l
+  }
+
+  columnLength = valuesLength + agesDiffLength + yearsDiffLength + agesYearsDiffLength +
+    ifelse(effects, yearsEffectDiffLength + yearsEffectDistLength + cohortDiffLength + cohortDistLength, 0L)
+
+  agesOffset = valuesLength
+  yearsOffset = agesOffset + agesDiffLength
+  agesYearsOffset = yearsOffset + yearsDiffLength
+  if(effects) {
+    yearsEffectOffset = agesYearsOffset + agesYearsDiffLength
+    yearsEffectDistOffset = yearsEffectOffset + yearsEffectDiffLength
+    cohortEffectOffset = yearsEffectDistOffset + yearsEffectDistLength
+    cohortEffectDistOffset = cohortEffectOffset + cohortDiffLength
+    nColumns = nAges*nYears + yearsHelper$l + cohHelper$l
+  }
+  else {
+    nColumns = nAges*nYears
+  }
+
+  m = new.env(parent = .GlobalEnv)
+  initialize(m, columnLength, nColumns, columnLength*4L)
+
+#   Rprof("performance.out")
+
+  for(a in 1L:nAges) {
+    for(y in 1L:nYears) {
+      p = P(a, y, nAges, nYears)
+      getV(a, y, nAges, nYears, m, p, cohHelper = cohHelper, yearsHelper = yearsHelper, effects = effects)
+      paa = PAA(a, y, nAges, nYears)
+      if(paa > 0L) {
+        getVaa(a, y, nAges, nYears, lambda * lambdaaa, m, agesOffset + paa)
+      }
+      pyy = PYY(a, y, nAges, nYears)
+      if(pyy > 0L) {
+        getVyy(a, y, nAges, nYears, lambda * lambdayy, m, yearsOffset + pyy)
+      }
+      pay = PAY(a, y, nAges, nYears)
+      if(pay > 0L) {
+        getVay(a, y, nAges, nYears, 2 * lambda * lambdaay, m, agesYearsOffset + pay)
+      }
+      if(effects) {
+        pyaa = yearsHelper$paa[a, y]
+        if(pyaa > 0L) {
+          getVYearsaa(a, y, nAges, nYears, lambdaYearsEffect, m, yearsEffectOffset + pyaa, yearsHelper = yearsHelper)
+        }
+        pyd = yearsHelper$p[a, y]
+        if(pyd > 0L) {
+          getVYearsDist(a, y, nAges, nYears, thetaYearsEffect, m, yearsEffectDistOffset + pyd, yearsHelper = yearsHelper)
+        }
+        pcay = cohHelper$pay[a, y]
+        if(pcay > 0L) {
+          getVCohortay(a, y, nAges, nYears, lambdaCohortEffect, m, cohortEffectOffset + pcay, cohHelper = cohHelper, yearsHelper = yearsHelper)
+        }
+        pcd = cohHelper$p[a, y]
+        if(pcd > 0L) {
+          getVCohortDist(a, y, nAges, nYears, thetaCohortEffect, m, cohortEffectDistOffset + pcd, cohHelper = cohHelper, yearsHelper = yearsHelper)
+        }
+      }
+    }
+  }
+
+#   Rprof(NULL)
+
+  return(m)
+}
+
+l1tp.getDesignMatrix = cmpfun(l1tp.getDesignMatrix.nc)
+
+l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1, lambdaay = 1,
+                                    lambdaYearsEffect = 5, thetaYearsEffect = 0.1*lambda,
+                                    lambdaCohortEffect = 5, thetaCohortEffect = 0.1*lambda,
+                                    cornerLength = 7, effects = TRUE, affdDiagonals = NULL, affdYears = NULL,
+                                    control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000))
+{
+  if(effects) {
+    yearsHelper = new.env(parent = .GlobalEnv)
+    prepareYearsHelper(yearsHelper, dim(data), affdYears = affdYears)
+    cohHelper = new.env(parent = .GlobalEnv)
+    prepareCohHelper(cohHelper, dim(data), cornerLength = cornerLength, affdDiagonals = affdDiagonals)
+  }
+  else {
+    yearsHelper = NULL
+    cohHelper = NULL
+  }
+
+  m = l1tp.getDesignMatrix(dim(data), lambda = lambda, lambdaaa = lambdaaa, lambdayy = lambdayy, lambdaay = lambdaay, lambdaYearsEffect = lambdaYearsEffect, thetaYearsEffect = thetaYearsEffect, lambdaCohortEffect = lambdaCohortEffect, thetaCohortEffect = thetaCohortEffect, cornerLength = cornerLength, cohHelper = cohHelper, yearsHelper = yearsHelper, effects = effects)
+  mcoo = new("matrix.coo", ra = m$ra[1L:m$l], ia = m$ia[1L:m$l], ja = m$ja[1L:m$l], dimension = m$d)
+  sm = as.matrix.csr(mcoo)
+  rm(mcoo)
+  target <- l1tp.getTargetVector(data, cohHelper = cohHelper, yearsHelper = yearsHelper, effects = effects)
+
+  noNA = !is.na(target)
+  targetNoNA = target[noNA]
+  smNoNA = sm[noNA,]
+
+#   timeFit = system.time({
+  suppressWarnings({fit = rq.fit.sfn(smNoNA, targetNoNA, control = control)})
+#   }); print("timeFit:"); print(timeFit)
+
+  result = l1tp.unTargetVector(fit$coef, dim(data))
+
+  if(effects) {
+    yearsEffect = l1tp.unTargetYearsEffect(fit$coef, dim(data), yearsHelper = yearsHelper)
+    cohortEffect = l1tp.unTargetCohortEffect(fit$coef, dim(data), cohHelper = cohHelper, yearsHelper = yearsHelper)
+  }
+  else {
+    yearsEffect = NULL
+    cohortEffect = NULL
+  }
+
+  return(list(result = result, yearsEffect = yearsEffect, cohortEffect = cohortEffect))
+}
+
+#' Smoothes demographic data optionally taking into account period and cohort effects
+#'
+#' @param data Demographic data presented as a matrix.
+#' @param lambda Controls "general flexibility" of the smooth surface.
+#' @param lambdaaa Controls "flexibility" of the smooth surface in age direction (first dimention).
+#' @param lambdayy Controls "flexibility" of the smooth surface in years direction (second dimention).
+#' @param lambdaay Controls "flexibility" of the smooth surface in age and years directions.
+#' @param lambdaYearsEffect Controls "flexibility" of the period effects.
+#' @param thetaYearsEffect Reduces likelihood of period effects.
+#' @param lambdaCohortEffect Controls "flexibility" of the cohort effects.
+#' @param thetaCohortEffect Reduces likelihood of cohort effects.
+#' @param cornerLength Sets the smallest length of a digonal to be considered for cohort effects.
+#' @param effects Controls if the cohort and period effects are taking into account.
+#' @param affdDiagonals Diagonals to be used for cohort effects.
+#' @param affdYears Years to be used for period effects.
+#' @param control Control data passed directly to rq.fit.sfn method (quantreg package).
+#' @return List with three components: smooth surface, period effects, cohort effects.
+#' @examples
+#' \donotrun {
+#' library(demography)
+#' m = log(fr.mort$rate$female[1:30, 150:160])
+#' sm = demogSmooth(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
+#' demogSmooth2D:::Show(m)
+#' demogSmooth2D:::Show(sm$result)
+#' }
+#' @export
+
+demogSmooth = cmpfun(l1tp.smooth.demogdata.nc)
