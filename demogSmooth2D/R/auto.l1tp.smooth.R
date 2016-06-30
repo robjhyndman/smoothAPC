@@ -30,11 +30,9 @@ demogSmooth.wrapper = function(...)
 #' @param control The control data passed directly to rq.fit.sfn method (quantreg package).
 #' @return A vector of optimal smoothing parameters.
 #' @examples
-#' \donotrun {
-#' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 150:160])
-#' parameters = estPar(m)
-#' }
+#' # library(demography)
+#' # m = log(fr.mort$rate$female[1:30, 150:160])
+#' # parameters = estPar(m)
 #' @export
 
 estPar = function(data,
@@ -141,15 +139,13 @@ estYY = function(data,
 #' @return A list with four components: smooth surface, period effects, cohort effects and parameters
 #' used for smoothing (passed as a parameter or estimated).
 #' @examples
-#' \donotrun {
-#' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 150:160])
-#' sm = autoDemogSmooth(m)
-#' demogSmooth2D:::Show(m)
-#' demogSmooth2D:::Show(sm$result)
-#' demogSmooth2D:::Show(sm$yearsEffect)
-#' demogSmooth2D:::Show(sm$cohortEffect)
-#' }
+#' # library(demography)
+#' # m = log(fr.mort$rate$female[1:30, 150:160])
+#' # sm = autoDemogSmooth(m)
+#' # Show(m)
+#' # Show(sm$result)
+#' # Show(sm$yearsEffect)
+#' # Show(sm$cohortEffect)
 #' @export
 
 autoDemogSmooth = function(data,
@@ -241,15 +237,13 @@ getAffected = function(resid, p.value = 0.05)
 #' @return A list with six components: smooth surface, period effects, cohort effects, parameters
 #' used for smoothing, diagonals used for cohort effects and years used for period effects.
 #' @examples
-#' \donotrun {
-#' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 150:160])
-#' sm = twoStepDemogSmooth(m)
-#' demogSmooth2D:::Show(m)
-#' demogSmooth2D:::Show(sm$result)
-#' demogSmooth2D:::Show(sm$yearsEffect)
-#' demogSmooth2D:::Show(sm$cohortEffect)
-#' }
+#' # library(demography)
+#' # m = log(fr.mort$rate$female[1:30, 150:160])
+#' # sm = twoStepDemogSmooth(m)
+#' # Show(m)
+#' # Show(sm$result)
+#' # Show(sm$yearsEffect)
+#' # Show(sm$cohortEffect)
 #' @export
 
 twoStepDemogSmooth = function(data,

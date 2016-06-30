@@ -405,13 +405,11 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' @param control Control data passed directly to rq.fit.sfn method (quantreg package).
 #' @return List with three components: smooth surface, period effects, cohort effects.
 #' @examples
-#' \donotrun {
-#' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 150:160])
-#' sm = demogSmooth(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
-#' demogSmooth2D:::Show(m)
-#' demogSmooth2D:::Show(sm$result)
-#' }
+#' # library(demography)
+#' # m = log(fr.mort$rate$female[1:30, 150:160])
+#' # sm = demogSmooth(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
+#' # Show(m)
+#' # Show(sm$result)
 #' @export
 
 demogSmooth = cmpfun(l1tp.smooth.demogdata.nc)

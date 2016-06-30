@@ -1,0 +1,97 @@
+library(rgl)
+library(colorspace)
+
+show = function(x, y, z,
+                title="",
+                labs = c("Age", "Time", "Value"),
+                aspect = c(1, 1, 0.6),
+                grid,
+                gridCol = "red",
+                type = 2,
+                color.pallete = function(n) rainbow(n, start=0.0, end=0.7))
+{
+  aspectX = x[length(x)] - x[1]
+  aspectY = y[length(y)] - y[1]
+  mn = min(z, na.rm=TRUE)
+  mx = max(z, na.rm=TRUE)
+  if(type == 1)
+    c = color.pallete(dim(z)[1]*dim(z)[2])
+  else if(type == 2)
+  {
+    if(mx == mn) {
+      c = "green"
+    }
+    else {
+      c = (z - mn)/(mx - mn)
+      r = color.pallete(65536)
+      c = r[round(c * 65535) + 1]
+    }
+  }
+  open3d(windowRect=c(10,35,810,835))
+  persp3d(x = x, y = y, z = z, aspect = c(aspectX * aspect[1], aspectY * aspect[2], aspectX * aspect[3]), xlab = labs[1], ylab = labs[2], zlab = labs[3], col=c)
+  title3d(main=title)
+
+  eps1 = 0.001 * abs(mx - mn)
+  if(!missing(grid) && !is.na(grid[1])) {
+    xGrid = seq(1, length(x), grid[1])
+    for(xInd in xGrid) {
+      lines3d(x[xInd], y, z[xInd,] + eps1, col = gridCol)
+      lines3d(x[xInd], y, z[xInd,] - eps1, col = gridCol)
+    }
+  }
+  if(!missing(grid) && !is.na(grid[2])) {
+    yGrid = seq(1, length(y), grid[2])
+    for(yInd in yGrid) {
+      lines3d(x, y[yInd], z[,yInd] + eps1, col = gridCol)
+      lines3d(x, y[yInd], z[,yInd] - eps1, col = gridCol)
+    }
+  }
+  rgl.bringtotop()
+}
+
+#' Presents demographic data using 3D surface and a heatmap.
+#'
+#' @param z Demographic data presented as a matrix.
+#' @param labs Vector of lables for X, Y and Z axes.
+#' @examples
+#' # Show(matrix(rnorm(100),10,10))
+#' # Show(matrix(1:100,10,10), c("Dimension 1", "Dimension 2", "Value"))
+#' @export
+
+Show = function(z, labs=c("X", "Y", "Z"))
+{
+  show(1:dim(z)[1], 1:dim(z)[2], z, labs=labs)
+  my.plot(1:dim(z)[1], 1:dim(z)[2], z, labs=labs)
+}
+
+my.colors =
+  function(n, h = c(260, 0), c = 80, l = c(20, 90), power = .7,
+          fixup = TRUE, gamma = NULL, ...)
+{
+  if(!is.null(gamma))
+    warning("'gamma' is deprecated and has no effect")
+  if(n < 1)
+    return(character(0))
+  h <- rep(h, length.out = 2)
+  c <- c[1]
+  l <- rep(l, length.out = 2)
+  power <- rep(power, length.out = 2)
+  rval <- seq(1, -1, length = n)
+  rval <- hex(polarLUV(L = l[2] - diff(l) * abs(rval)^power[2],
+                       C = c * abs(rval)^power[1], H = ifelse(rval > 0, h[1],
+                                                              h[2])), fixup = fixup, ...)
+  return(rval)
+}
+
+my.plot = function(ages, years, z, labs=c("X", "Y", "Z"))
+{
+  if(max(z)>0 && min(z)<0) {
+    filled.contour(ages, years, z, zlim = c(-max(abs(z)), max(abs(z))), color = my.colors,
+                   plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
+                   plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
+  } else {
+    filled.contour(ages, years, z, color = my.colors,
+                   plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
+                   plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
+  }
+}
