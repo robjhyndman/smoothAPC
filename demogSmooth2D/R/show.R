@@ -51,7 +51,40 @@ show = function(x, y, z,
 
 #' Presents demographic data using 3D surface and a heatmap.
 #'
-#' @param z Demographic data presented as a matrix.
+#' @param x Result of smoothing (object of class \code{sm2D}).
+#' @param component "smooth", "period", "cohort", "residuals" or "original"
+#' @param labs Vector of lables for X, Y and Z axes.
+#' @examples
+#' # library(demography)
+#' # m = log(fr.mort$rate$female[1:30, 150:160])
+#' # sm = autoDemogSmooth(m)
+#' #
+#' # plot(sm)
+#' # plot(sm, "cohort")
+#' # plot(sm, "period")
+#' # plot(sm, "residuals")
+#' # plot(sm, "original")
+#' @export
+
+plot.sm2D = function(x,
+                     component = c("smooth", "period", "cohort", "residuals", "original"),
+                     labs=c("Time", "Age", "Value"))
+{
+  if(!(component[1] %in% c("smooth", "period", "cohort", "residuals", "original")))
+    stop("Incorrect component.")
+  data = switch (which(component[1] == c("smooth", "period", "cohort", "residuals", "original")),
+    x$result,
+    x$yearsEffect,
+    x$cohortEffect,
+    x$original - x$result - x$yearsEffect - x$cohortEffect,
+    x$original
+  )
+  Show(data, labs)
+}
+
+#' Presents matrix as 3D surface and a heatmap.
+#'
+#' @param z Matrix.
 #' @param labs Vector of lables for X, Y and Z axes.
 #' @examples
 #' # Show(matrix(rnorm(100),10,10))

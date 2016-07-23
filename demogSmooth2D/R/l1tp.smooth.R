@@ -384,7 +384,9 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
     cohortEffect = NULL
   }
 
-  return(list(result = result, yearsEffect = yearsEffect, cohortEffect = cohortEffect))
+  result = list(result = result, yearsEffect = yearsEffect, cohortEffect = cohortEffect, original = data)
+  class(result) = "sm2D"
+  return(result)
 }
 
 #' Smoothes demographic data optionally taking into account period and cohort effects
@@ -408,8 +410,8 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' # library(demography)
 #' # m = log(fr.mort$rate$female[1:30, 150:160])
 #' # sm = demogSmooth(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
-#' # Show(m)
-#' # Show(sm$result)
+#' # plot(sm, "original")
+#' # plot(sm)
 #' @export
 
 demogSmooth = cmpfun(l1tp.smooth.demogdata.nc)

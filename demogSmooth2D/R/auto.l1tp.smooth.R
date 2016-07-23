@@ -61,9 +61,13 @@ estPar = function(data,
     }
     if(length(x) != length(lower)) stop("Error: length(x) != length(lower)")
     xx = pmin(pmax(x, lower), upper)
-    penalty = sum(abs(xx - x))
-    x = xx
-    if(trace) print(x)
+    if(sum(abs(xx - x)) > 0) {
+      if(trace) {
+        print("Beyond lower and upper bounds")
+        print("smoothCv result: Inf")
+      }
+      return(Inf)
+    }
     lambdaaa <- x[1]
     lambdayy <- x[2]
     lambdaay <- x[3]
@@ -84,10 +88,8 @@ estPar = function(data,
       # print(time)
       print("smoothCv result:")
       print(cv[2])
-      print("Penalty:")
-      print(penalty)
     }
-    return(cv[2] + penalty)
+    return(cv[2])
   }
 
   if(!is.null(parameters)) {
@@ -141,11 +143,11 @@ estYY = function(data,
 #' @examples
 #' # library(demography)
 #' # m = log(fr.mort$rate$female[1:30, 150:160])
-#' # sm = autoDemogSmooth(m)
 #' # Show(m)
-#' # Show(sm$result)
-#' # Show(sm$yearsEffect)
-#' # Show(sm$cohortEffect)
+#' # sm = autoDemogSmooth(m)
+#' # plot(sm)
+#' # plot(sm, "period")
+#' # plot(sm, "cohort")
 #' @export
 
 autoDemogSmooth = function(data,
@@ -186,8 +188,7 @@ autoDemogSmooth = function(data,
                        cornerLength = cornerLength,
                        effects = effects,
                        control = control)
-  result[[4]] = parameters
-  names(result)[4] = "parameters"
+  result$parameters = parameters
   return(result)
 }
 
@@ -239,11 +240,11 @@ getAffected = function(resid, p.value = 0.05)
 #' @examples
 #' # library(demography)
 #' # m = log(fr.mort$rate$female[1:30, 150:160])
-#' # sm = twoStepDemogSmooth(m)
 #' # Show(m)
-#' # Show(sm$result)
-#' # Show(sm$yearsEffect)
-#' # Show(sm$cohortEffect)
+#' # sm = twoStepDemogSmooth(m)
+#' # plot(sm)
+#' # plot(sm, "period")
+#' # plot(sm, "cohort")
 #' @export
 
 twoStepDemogSmooth = function(data,
@@ -297,11 +298,8 @@ twoStepDemogSmooth = function(data,
                        affdDiagonals = affd$affdDiagonals,
                        affdYears = affd$affdYears,
                        control = control)
-  result[[4]] = parameters
-  names(result)[4] = "parameters"
-  result[[5]] = affd$affdDiagonals
-  names(result)[5] = "affdDiagonals"
-  result[[6]] = affd$affdYears
-  names(result)[6] = "affdYears"
+  result$parameters = parameters
+  result$affdDiagonals = affd$affdDiagonals
+  result$affdYears = affd$affdYears
   return(result)
 }
