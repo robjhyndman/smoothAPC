@@ -65,7 +65,7 @@ estPar = function(data,
     xx = pmin(pmax(x, lower), upper)
     if(sum(abs(xx - x)) > 0) {
       if(trace) {
-        print("Beyond lower and upper bounds")
+        print("Beyond lower or upper bounds")
         print("smoothCv result: Inf")
       }
       return(Inf)
@@ -159,9 +159,9 @@ autoDemogSmooth = function(data,
                            cornerLength = 7,
                            affdDiagonals = NULL,
                            affdYears = NULL,
-                           lower = head(c(0.01, 0.01, 0.01, 2.0, 0.01, 2.0, 0.01), 3 + effects*4),
+                           lower = head(c(0.01, 0.01, 0.01, 2.0, 0.001, 2.0, 0.001), 3 + effects*4),
                            upper = head(c(1.2,  1.8,  1.2,  12,  0.4,  12,  0.4), 3 + effects*4),
-                           init =  head(c(0.1,  0.1,  0.2,  4,   0.05, 4,   0.05), 3 + effects*4),
+                           init =  head(c(0.1,  0.1,  0.2,  4,   0.01, 4,   0.01), 3 + effects*4),
                            reltol = 0.001,
                            parameters = NULL,
                            trace = F,
@@ -256,9 +256,9 @@ getAffected = function(resid, p.value = 0.05)
 twoStepDemogSmooth = function(data,
                               p.value = 0.05,
                               cornerLength = 7,
-                              lower = c(0.01, 0.01, 0.01, 2.0, 0.01, 2.0, 0.01),
+                              lower = c(0.01, 0.01, 0.01, 2.0, 0.001, 2.0, 0.001),
                               upper = c(1.2,  1.8,  1.2,  12,  0.4,  12,  0.4),
-                              init =  c(0.1,  0.1,  0.2,  4,   0.05, 4,   0.05),
+                              init =  c(0.1,  0.1,  0.2,  4,   0.01, 4,   0.01),
                               reltol = 0.001,
                               trace = F,
                               control = list(nnzlmax=1000000, nsubmax = 2000000, tmpmax = 200000))
