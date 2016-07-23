@@ -69,7 +69,7 @@ show = function(x, y, z,
 
 plot.sm2D = function(x,
                      component = c("smooth", "period", "cohort", "residuals", "original"),
-                     labs=c("Time", "Age", "Value"))
+                     labs=c("Age", "Time", NA))
 {
   if(!(component[1] %in% c("smooth", "period", "cohort", "residuals", "original")))
     stop("Incorrect component.")
@@ -80,6 +80,7 @@ plot.sm2D = function(x,
     x$original - x$result - ifelse(is.null(x$yearsEffect), x$original*0, x$yearsEffect) - ifelse(is.null(x$cohortEffect), x$original*0, x$cohortEffect),
     x$original
   )
+  labs[3] = ifelse(is.na(labs[3]), gsub("(^[[:alpha:]])", "\\U\\1", component[1], perl=TRUE), labs[3])
   Show(data, labs)
 }
 
