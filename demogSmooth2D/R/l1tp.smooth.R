@@ -412,6 +412,8 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' # sm = demogSmooth(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
 #' # plot(sm, "original")
 #' # plot(sm)
+#' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
+#' @author Alex Dokumentov
 #' @export
 
 demogSmooth = cmpfun(l1tp.smooth.demogdata.nc)

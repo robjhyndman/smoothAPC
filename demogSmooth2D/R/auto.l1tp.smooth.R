@@ -33,6 +33,8 @@ demogSmooth.wrapper = function(...)
 #' # library(demography)
 #' # m = log(fr.mort$rate$female[1:30, 150:160])
 #' # parameters = estPar(m)
+#' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
+#' @author Alex Dokumentov
 #' @export
 
 estPar = function(data,
@@ -148,6 +150,8 @@ estYY = function(data,
 #' # plot(sm)
 #' # plot(sm, "period")
 #' # plot(sm, "cohort")
+#' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
+#' @author Alex Dokumentov
 #' @export
 
 autoDemogSmooth = function(data,
@@ -245,6 +249,8 @@ getAffected = function(resid, p.value = 0.05)
 #' # plot(sm)
 #' # plot(sm, "period")
 #' # plot(sm, "cohort")
+#' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
+#' @author Alex Dokumentov
 #' @export
 
 twoStepDemogSmooth = function(data,

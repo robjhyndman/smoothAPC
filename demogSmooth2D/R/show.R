@@ -64,6 +64,7 @@ show = function(x, y, z,
 #' # plot(sm, "period")
 #' # plot(sm, "residuals")
 #' # plot(sm, "original")
+#' @author Alex Dokumentov
 #' @export
 
 plot.sm2D = function(x,
@@ -76,7 +77,7 @@ plot.sm2D = function(x,
     x$result,
     x$yearsEffect,
     x$cohortEffect,
-    x$original - x$result - x$yearsEffect - x$cohortEffect,
+    x$original - x$result - ifelse(is.null(x$yearsEffect), x$original*0, x$yearsEffect) - ifelse(is.null(x$cohortEffect), x$original*0, x$cohortEffect),
     x$original
   )
   Show(data, labs)
@@ -89,6 +90,7 @@ plot.sm2D = function(x,
 #' @examples
 #' # Show(matrix(rnorm(100),10,10))
 #' # Show(matrix(1:100,10,10), c("Dimension 1", "Dimension 2", "Value"))
+#' @author Alex Dokumentov
 #' @export
 
 Show = function(z, labs=c("X", "Y", "Z"))
