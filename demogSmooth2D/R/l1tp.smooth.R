@@ -325,12 +325,18 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
   }
 
   m = l1tp.getDesignMatrix(dim(data), lambda = lambda, lambdaaa = lambdaaa, lambdayy = lambdayy, lambdaay = lambdaay, lambdaYearsEffect = lambdaYearsEffect, thetaYearsEffect = thetaYearsEffect, lambdaCohortEffect = lambdaCohortEffect, thetaCohortEffect = thetaCohortEffect, cornerLength = cornerLength, cohHelper = cohHelper, yearsHelper = yearsHelper, effects = effects)
-  mcoo = new("matrix.coo", ra = m$ra[1L:m$l], ia = m$ia[1L:m$l], ja = m$ja[1L:m$l], dimension = m$d)
+  ra = m$ra[1L:m$l]
+  ia = m$ia[1L:m$l]
+  ja = m$ja[1L:m$l]
+  mcoo = new("matrix.coo", ra = ra[ra != 0], ia = ia[ra != 0], ja = ja[ra != 0], dimension = m$d)
   sm = as.matrix.csr(mcoo)
+
   rm(mcoo)
   target <- l1tp.getTargetVector(data, cohHelper = cohHelper, yearsHelper = yearsHelper, effects = effects)
 
-  noNA = !is.na(target)
+  goodRows = rep(FALSE, length(target))
+  goodRows[ia[ra != 0]] = TRUE
+  noNA = !is.na(target) & goodRows
   targetNoNA = target[noNA]
   smNoNA = sm[noNA,]
 
