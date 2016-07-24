@@ -11,15 +11,13 @@ append = cmpfun(function(env, val, i, j) {
   env$ja[b:env$l] <- j
 })
 
-initialize.nc = function(env, nRows, nCols, len) {
+initialize = cmpfun(function(env, nRows, nCols, len) {
   env$d <- c(nRows, nCols)
   env$ra <- numeric(len)
   env$ia <- integer(len)
   env$ja <- integer(len)
   env$l <- 0L
-}
-
-initialize = cmpfun(initialize.nc)
+})
 
 l1tp.getTargetVector = function(y, cohHelper, yearsHelper, effects)
 {
@@ -79,19 +77,17 @@ l1tp.unTargetCohortEffect = function(y, dims, cohHelper, yearsHelper)
   return(t)
 }
 
-P.nc = function(ageInd, yearInd, nAges, nYears)
+P = cmpfun(function(ageInd, yearInd, nAges, nYears)
 {
   return(ageInd + (yearInd - 1L) * nAges)
-}
-
-P = cmpfun(P.nc)
+})
 
 InvP = function(p, nAges, nYears)
 {
   return(c((p-1L)%%nAges+1L, (p-1L)%/%nAges+1L))
 }
 
-getV.nc = function(ageInd, yearInd, nAges, nYears, cm, row, cohHelper, yearsHelper, effects)
+getV = cmpfun(function(ageInd, yearInd, nAges, nYears, cm, row, cohHelper, yearsHelper, effects)
 {
   p = P(ageInd, yearInd, nAges, nYears)
   append(cm, c(1), c(row), c(p))
@@ -101,72 +97,55 @@ getV.nc = function(ageInd, yearInd, nAges, nYears, cm, row, cohHelper, yearsHelp
     ppp = cohHelper$p[ageInd, yearInd]
     if(ppp > 0L) append(cm, c(1), c(row), c(nAges*nYears + yearsHelper$l + ppp))
   }
-}
+})
 
-getV = cmpfun(getV.nc)
-
-getVaa.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
+getVaa = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
 {
   append(cm, c(-2*lambda, lambda, lambda), c(row, row, row),
     c(P(ageInd, yearInd, nAges, nYears), P(ageInd - 1L, yearInd, nAges, nYears), P(ageInd + 1L, yearInd, nAges, nYears)))
-}
+})
 
-getVaa = cmpfun(getVaa.nc)
-
-getVyy.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
+getVyy = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
 {
   append(cm, c(-2*lambda, lambda, lambda), c(row, row, row),
     c(P(ageInd, yearInd, nAges, nYears), P(ageInd, yearInd - 1L, nAges, nYears), P(ageInd, yearInd + 1L, nAges, nYears)))
-}
+})
 
-getVyy = cmpfun(getVyy.nc)
-
-getVay.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
+getVay = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
 {
   append(cm, c(lambda, -lambda, -lambda, lambda), c(row, row, row, row),
     c(P(ageInd, yearInd, nAges, nYears), P(ageInd, yearInd + 1L, nAges, nYears), P(ageInd + 1L, yearInd, nAges, nYears), P(ageInd + 1L, yearInd + 1L, nAges, nYears)))
-}
+})
 
-getVay = cmpfun(getVay.nc)
-
-getVYearsaa.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row, yearsHelper)
+getVYearsaa = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row, yearsHelper)
 {
   offset = nAges*nYears
   append(cm, c(-2 * lambda, lambda, lambda), c(row, row, row),
     c(offset + yearsHelper$p[ageInd, yearInd], offset + yearsHelper$p[ageInd - 1L, yearInd], offset + yearsHelper$p[ageInd + 1L, yearInd]))
-}
-
-getVYearsaa = cmpfun(getVYearsaa.nc)
+})
 
 #It is to avoid singularity of the design matrix
-getVYearsDist.nc = function(ageInd, yearInd, nAges, nYears, theta, cm, row, yearsHelper)
+getVYearsDist = cmpfun(function(ageInd, yearInd, nAges, nYears, theta, cm, row, yearsHelper)
 {
   offset = nAges*nYears
   append(cm, theta, row, offset + yearsHelper$p[ageInd, yearInd])
-}
+})
 
-getVYearsDist = cmpfun(getVYearsDist.nc)
-
-
-getVCohortay.nc = function(ageInd, yearInd, nAges, nYears, lambda, cm, row, cohHelper, yearsHelper)
+getVCohortay = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row, cohHelper, yearsHelper)
 {
   offset = nAges*nYears + yearsHelper$l
   append(cm, c(-2 * lambda, lambda, lambda), c(row, row, row),
     c(offset + cohHelper$p[ageInd, yearInd], offset + cohHelper$p[ageInd - 1L, yearInd - 1L], offset + cohHelper$p[ageInd + 1L, yearInd + 1L]))
-}
-
-getVCohortay = cmpfun(getVCohortay.nc)
+})
 
 #It is to avoid singularity of the design matrix
-getVCohortDist.nc = function(ageInd, yearInd, nAges, nYears, theta, cm, row, cohHelper, yearsHelper)
+getVCohortDist = cmpfun(function(ageInd, yearInd, nAges, nYears, theta, cm, row, cohHelper, yearsHelper)
 {
   offset = nAges*nYears + yearsHelper$l
   append(cm, theta, row, offset + cohHelper$p[ageInd, yearInd])
-}
+})
 
-getVCohortDist = cmpfun(getVCohortDist.nc)
-
-PAA.nc = function(ageInd, yearInd, nAges, nYears)
+PAA = cmpfun(function(ageInd, yearInd, nAges, nYears)
 {
   if(ageInd <= 1L || ageInd >= nAges)
   {
@@ -175,11 +154,9 @@ PAA.nc = function(ageInd, yearInd, nAges, nYears)
   else {
     return((ageInd - 1L) + (yearInd - 1L) * (nAges - 2L))
   }
-}
+})
 
-PAA = cmpfun(PAA.nc)
-
-PYY.nc = function(ageInd, yearInd, nAges, nYears)
+PYY = cmpfun(function(ageInd, yearInd, nAges, nYears)
 {
   if(yearInd <= 1L || yearInd >= nYears)
   {
@@ -188,11 +165,9 @@ PYY.nc = function(ageInd, yearInd, nAges, nYears)
   else {
     return(ageInd + (yearInd - 2L) * nAges)
   }
-}
+})
 
-PYY = cmpfun(PYY.nc)
-
-PAY.nc = function(ageInd, yearInd, nAges, nYears)
+PAY = cmpfun(function(ageInd, yearInd, nAges, nYears)
 {
   if(yearInd < 1L || yearInd >= nYears || ageInd < 1L || ageInd >= nAges)
   {
@@ -201,11 +176,9 @@ PAY.nc = function(ageInd, yearInd, nAges, nYears)
   else {
     return(ageInd + (yearInd - 1L) * (nAges - 1L))
   }
-}
+})
 
-PAY = cmpfun(PAY.nc)
-
-prepareCohHelper.nc = function(cohHelper, dims, cornerLength, affdDiagonals)
+prepareCohHelper = cmpfun(function(cohHelper, dims, cornerLength, affdDiagonals)
 {
   nAges = dims[1]
   nYears = dims[2]
@@ -229,11 +202,9 @@ prepareCohHelper.nc = function(cohHelper, dims, cornerLength, affdDiagonals)
   }
   cohHelper$ldif <- cay
   cohHelper$l <- c
-}
+})
 
-prepareCohHelper = cmpfun(prepareCohHelper.nc)
-
-prepareYearsHelper.nc = function(yearsHelper, dims, affdYears)
+prepareYearsHelper = cmpfun(function(yearsHelper, dims, affdYears)
 {
   nAges = dims[1]
   nYears = dims[2]
@@ -254,11 +225,9 @@ prepareYearsHelper.nc = function(yearsHelper, dims, affdYears)
   }
   yearsHelper$ldif <- caa
   yearsHelper$l <- c
-}
+})
 
-prepareYearsHelper = cmpfun(prepareYearsHelper.nc)
-
-l1tp.getDesignMatrix.nc = function(dims, lambda, lambdaaa, lambdayy, lambdaay, lambdaYearsEffect, thetaYearsEffect, lambdaCohortEffect, thetaCohortEffect, cornerLength, cohHelper, yearsHelper, effects)
+l1tp.getDesignMatrix = cmpfun(function(dims, lambda, lambdaaa, lambdayy, lambdaay, lambdaYearsEffect, thetaYearsEffect, lambdaCohortEffect, thetaCohortEffect, cornerLength, cohHelper, yearsHelper, effects)
 {
   nAges = dims[1]
   nYears = dims[2]
@@ -336,9 +305,7 @@ l1tp.getDesignMatrix.nc = function(dims, lambda, lambdaaa, lambdayy, lambdaay, l
 #   Rprof(NULL)
 
   return(m)
-}
-
-l1tp.getDesignMatrix = cmpfun(l1tp.getDesignMatrix.nc)
+})
 
 l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1, lambdaay = 1,
                                     lambdaYearsEffect = 5, thetaYearsEffect = 0.1*lambda,
