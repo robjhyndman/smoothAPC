@@ -89,9 +89,9 @@ estPar = function(data,
     if(trace) {
       # print(time)
       print("smoothCv result:")
-      print(cv[2])
+      print(cv$MAE)
     }
-    return(cv[2])
+    return(cv$MAE)
   }
 
   if(!is.null(parameters)) {
@@ -116,7 +116,7 @@ estYY = function(data,
     cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))
     cv[i] <- smoothCv(demogSmooth.wrapper, data = data,
                       lambda = 1, lambdaaa = 0.01*lambdas[i], lambdayy = lambdas[i], lambdaay = 0.01*lambdas[i],
-                      effects = FALSE, control = control)[2]
+                      effects = FALSE, control = control)$MAE
   }
   return(lambdas[which.min(cv)])
 }
@@ -268,14 +268,16 @@ twoStepDemogSmooth = function(data,
                    upper = upper[2],
                    step = abs(upper[2]-lower[2])/20,
                    control = control)
-  result0 = demogSmooth(data,
-                        lambda = 1,
-                        lambdaaa = 0,
-                        lambdayy = lambdayy,
-                        lambdaay = 0,
-                        effects = FALSE,
-                        control = control)
-  resid = data - result0$result
+  resid = smoothCv(demogSmooth.wrapper,
+                   data = data,
+                   lambda = 1,
+                   lambdaaa = 0,
+                   lambdayy = lambdayy,
+                   lambdaay = 0,
+                   effects = FALSE,
+                   control = control)$cvResiduals
+  # Show(resid)
+  # plot(colSums(abs(resid)))
   affd = getAffected(resid, p.value = p.value)
 
   parameters = estPar(data,

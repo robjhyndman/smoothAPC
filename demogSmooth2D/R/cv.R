@@ -39,13 +39,21 @@ partialSAE.nc = function(data1, data2, points)
 
 partialSAE = cmpfun(partialSAE.nc)
 
+updateResiduals = function(res, data1, data2, points)
+{
+  if(is.null(res)) res = data1*0
+  for(p in points) {
+    res[p[1],p[2]] = data2[p[1],p[2]] - data1[p[1],p[2]]
+  }
+  return(res)
+}
+
 smoothCv.nc = function(smoothFun, data, upToAgeInd = dim(data)[1], fromAgeInd = 1, folds = 0:4, ...)
 {
   nAges = dim(data)[1]
   nYears = dim(data)[2]
-  SSE = 0
-  SAE = 0
-  l = 0
+  SSE = SAE = l = 0
+  r = NULL
   for(k in folds) {
     lmWithNAs = data
     naPoints = cvPoints(k, max(1, fromAgeInd), min(nAges, upToAgeInd), nYears)
@@ -61,9 +69,10 @@ smoothCv.nc = function(smoothFun, data, upToAgeInd = dim(data)[1], fromAgeInd = 
     result = smoothFun(lmWithNAs, ...)
     SSE = SSE + partialSSE(data, result, fltPoints)
     SAE = SAE + partialSAE(data, result, fltPoints)
+    r = updateResiduals(r, data, result, fltPoints)
     l = l + length(fltPoints)
   }
-  return(c(MSE = SSE/l, MAE = SAE/l))
+  return(list(MSE = SSE/l, MAE = SAE/l, cvResiduals = r))
 }
 
 smoothCv = cmpfun(smoothCv.nc)

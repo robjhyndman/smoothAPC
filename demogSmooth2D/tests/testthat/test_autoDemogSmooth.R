@@ -34,7 +34,7 @@ test_that("Testing autoDemogSmooth on linear data with noise, effects = TRUE", {
 
 test_that("Testing autoDemogSmooth on linear data with noise, preiod and cohort effects, effects = TRUE", {
   sm = autoDemogSmooth(m + coh + per + err, effects = TRUE)
-  expect_equivalent(sm$result, m)
-  expect_equivalent(sm$yearsEffect, per)
-  expect_equivalent(sm$cohortEffect, coh)
+  all.equal(sm$result, m, tolerance = 1e-7, check.attributes = F)
+  all.equal(sm$yearsEffect, per, tolerance = 1e-7, check.attributes = F)
+  all.equal(sm$cohortEffect, coh, tolerance = 1e-7, check.attributes = F)
 })
