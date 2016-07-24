@@ -3,15 +3,13 @@ require(quantreg)
 require(stats)
 require(lmtest)
 
-append.nc = function(env, val, i, j) {
+append = cmpfun(function(env, val, i, j) {
   b <- env$l + 1L
   env$l <- env$l + length(val)
   env$ra[b:env$l] <- val
   env$ia[b:env$l] <- i
   env$ja[b:env$l] <- j
-}
-
-append = cmpfun(append.nc)
+})
 
 initialize.nc = function(env, nRows, nCols, len) {
   env$d <- c(nRows, nCols)
