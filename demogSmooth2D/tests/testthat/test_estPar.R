@@ -5,11 +5,11 @@ colnames(m) = 1980:1989
 
 test_that("estPar testing, effects = FALSE", {
   est = estPar(m, effects = FALSE)
-  expect_equivalent(length(est), 3)
+  expect_equivalent(length(est$par), 3)
 })
 
 test_that("estPar testing, effects = TRUE", {
   est = estPar(m, effects = TRUE)
-  expect_equivalent(length(est), 7)
+  expect_equivalent(length(est$par), 7)
 })
 

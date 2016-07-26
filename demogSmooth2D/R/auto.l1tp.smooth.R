@@ -101,26 +101,46 @@ estPar = function(data,
   }
 
   result = optim(par = init, fn = f, control = list(reltol = reltol))
-  return(result$par)
+  return(list(par = result$par, cv = result$value))
+}
+
+estAA = function(data,
+                 lower = 0.2,
+                 upper = 10,
+                 step = 0.2,
+                 trace = trace,
+                 control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000))
+{
+  lambdas = seq(lower, upper, by = step)
+  cv = 0
+  for(i in seq_along(lambdas)) {
+    if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
+    cv[i] <- smoothCv(demogSmooth.wrapper, data = data,
+                      lambda = 1, lambdaaa = lambdas[i], lambdayy = 0.01*lambdas[i], lambdaay = 0.01*lambdas[i],
+                      effects = FALSE, control = control)$MAE
+    if(trace) {print(paste("lambdaAA:", lambdas[i])); print(cv[i])}
+  }
+  return(lambdas[which.min(cv)])
 }
 
 estYY = function(data,
                  lower = 0.2,
                  upper = 10,
                  step = 0.2,
+                 trace = trace,
                  control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000))
 {
   lambdas = seq(lower, upper, by = step)
   cv = 0
   for(i in seq_along(lambdas)) {
-    cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))
+    if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
     cv[i] <- smoothCv(demogSmooth.wrapper, data = data,
                       lambda = 1, lambdaaa = 0.01*lambdas[i], lambdayy = lambdas[i], lambdaay = 0.01*lambdas[i],
                       effects = FALSE, control = control)$MAE
+    if(trace) {print(paste("lambdaYY:", lambdas[i])); print(cv[i])}
   }
   return(lambdas[which.min(cv)])
 }
-
 
 #' Smoothes demographic data using automatically estimated parameters and optionally
 #' taking into account period and cohort effects
@@ -178,7 +198,7 @@ autoDemogSmooth = function(data,
                         init =  init,
                         reltol = reltol,
                         trace = trace,
-                        control = control)
+                        control = control)$par
   }
   result = demogSmooth(data,
                        lambda = 1,
@@ -243,10 +263,11 @@ getAffected = function(resid, p.value = 0.05)
 #' used for smoothing, diagonals used for cohort effects and years used for period effects.
 #' @examples
 #' # library(demography)
-#' # m = log(fr.mort$rate$female[1:30, 150:160])
+#' m = log(fr.mort$rate$female[1:30, 120:139])
 #' # Show(m)
 #' # sm = twoStepDemogSmooth(m)
 #' # plot(sm)
+#' # plot(sm, "surface")
 #' # plot(sm, "period")
 #' # plot(sm, "cohort")
 #' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
@@ -256,9 +277,9 @@ getAffected = function(resid, p.value = 0.05)
 twoStepDemogSmooth = function(data,
                               p.value = 0.05,
                               cornerLength = 7,
-                              lower = c(0.01, 0.01, 0.01, 2.0, 0.001, 2.0, 0.001),
+                              lower = c(0.01, 0.01, 0.01, 1.0, 0.001, 1.0, 0.001),
                               upper = c(1.2,  1.8,  1.2,  12,  0.4,  12,  0.4),
-                              init =  c(0.1,  0.1,  0.2,  4,   0.01, 4,   0.01),
+                              init =  c(0.1,  0.1,  0.2,  4,   0.001, 4,   0.001),
                               reltol = 0.001,
                               trace = F,
                               control = list(nnzlmax=1000000, nsubmax = 2000000, tmpmax = 200000))
@@ -267,6 +288,7 @@ twoStepDemogSmooth = function(data,
                    lower = lower[2],
                    upper = upper[2],
                    step = abs(upper[2]-lower[2])/20,
+                   trace = trace,
                    control = control)
   resid = smoothCv(demogSmooth.wrapper,
                    data = data,
@@ -276,22 +298,62 @@ twoStepDemogSmooth = function(data,
                    lambdaay = 0,
                    effects = FALSE,
                    control = control)$cvResiduals
-  # Show(resid)
-  # plot(colSums(abs(resid)))
-  affd = getAffected(resid, p.value = p.value)
-
+  lambdaYearsEffect = estAA(resid,
+                           lower = lower[4],
+                           upper = upper[4],
+                           step = abs(upper[4]-lower[4])/20,
+                           trace = trace,
+                           control = control)
+  result1 = demogSmooth(resid,
+                       lambda = 1,
+                       lambdaaa = lambdaYearsEffect,
+                       lambdayy = 0.01*lambdaYearsEffect,
+                       lambdaay = 0.01*lambdaYearsEffect,
+                       effects = F,
+                       control = control)
+  vals = colSums(abs(result1$result))
+  k = ceiling(length(vals)*0.15)
+  n <- length(vals)
+  colsNA = which(vals >= sort(vals, partial = n-k+1)[n-k+1])
+  dataNA = data
+  dataNA[,colsNA] = NA
+  parametersNA = estPar(dataNA,
+                        effects = FALSE,
+                        lower = lower[1:3],
+                        upper = upper[1:3],
+                        init = init[1:3],
+                        reltol = reltol,
+                        trace = trace,
+                        control = control)$par
+  # result2 = demogSmooth(data,
+  #                      lambda = 1,
+  #                      lambdaaa = parametersNA[1],
+  #                      lambdayy = parametersNA[2],
+  #                      lambdaay = parametersNA[3],
+  #                      effects = FALSE,
+  #                      control = control)
+  resid2 = smoothCv(demogSmooth.wrapper,
+                   data = data,
+                   lambda = 1,
+                   lambdaaa = parametersNA[1],
+                   lambdayy = parametersNA[2],
+                   lambdaay = parametersNA[3],
+                   effects = FALSE,
+                   control = control)$cvResiduals
+  affd = getAffected(resid2, p.value = p.value)
+  # affd$affdYears = sort(union(affd$affdYears, colsNA))
   parameters = estPar(data,
                       effects = TRUE,
                       affdDiagonals = affd$affdDiagonals,
                       affdYears = affd$affdYears,
-                      parameters = c(0.1*lambdayy, 0.1*lambdayy, lambdayy),
+                      parameters = c(parametersNA,lambdaYearsEffect,init[5],lambdaYearsEffect,init[7]),
                       cornerLength = cornerLength,
                       lower = lower,
                       upper = upper,
-                      init =  init,
+                      init = init,
                       reltol = reltol,
                       trace = trace,
-                      control = control)
+                      control = control)$par
   result = demogSmooth(data,
                        lambda = 1,
                        lambdaaa = parameters[1],
@@ -311,3 +373,4 @@ twoStepDemogSmooth = function(data,
   result$affdYears = affd$affdYears
   return(result)
 }
+
