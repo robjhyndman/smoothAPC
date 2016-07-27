@@ -137,7 +137,7 @@ my.plot = function(ages, years, z, labs=c("X", "Y", "Z"))
                    plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
                    plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
   } else {
-    filled.contour(ages, years, z, color = my.colors,
+    filled.contour(ages, years, z, color = function(n) rainbow(n, start=0.0, end=0.7),
                    plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
                    plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
   }
