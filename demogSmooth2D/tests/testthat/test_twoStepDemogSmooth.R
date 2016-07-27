@@ -19,7 +19,7 @@ per = matrix(0, 10,10)
 per[,5] = 1000
 
 test_that("Testing twoStepDemogSmooth on linear data with noise", {
-  sm = twoStepDemogSmooth(m + err)
+  sm = twoStepDemogSmooth(data = m + err)
   expect_equivalent(sm$result, m)
   expect_equivalent(sm$yearsEffect, zer)
   expect_equivalent(sm$cohortEffect, zer)

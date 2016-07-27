@@ -68,16 +68,27 @@ show = function(x, y, z,
 #' @export
 
 plot.sm2D = function(x,
-                     component = c("smooth", "period", "cohort", "residuals", "original"),
+                     component = c("all", "surface", "period", "cohort", "residuals", "original"),
                      labs=c("Age", "Time", NA))
 {
-  if(!(component[1] %in% c("smooth", "period", "cohort", "residuals", "original")))
+  if(!(component[1] %in% c("all", "surface", "period", "cohort", "residuals", "original")))
     stop("Incorrect component.")
-  data = switch (which(component[1] == c("smooth", "period", "cohort", "residuals", "original")),
+  data = switch (which(component[1] == c("all","surface", "period", "cohort", "residuals", "original")),
+    {
+      combined = x$result
+      if(!is.null(x$yearsEffect)) combined = combined + x$yearsEffect
+      if(!is.null(x$cohortEffect)) combined = combined + x$cohortEffect
+      combined
+    },
     x$result,
     x$yearsEffect,
     x$cohortEffect,
-    x$original - x$result - ifelse(is.null(x$yearsEffect), x$original*0, x$yearsEffect) - ifelse(is.null(x$cohortEffect), x$original*0, x$cohortEffect),
+    {
+      residuals = x$original - x$result
+      if(!is.null(x$yearsEffect)) residuals = residuals - x$yearsEffect
+      if(!is.null(x$cohortEffect)) residuals = residuals - x$cohortEffect
+      residuals
+    },
     x$original
   )
   labs[3] = ifelse(is.na(labs[3]), gsub("(^[[:alpha:]])", "\\U\\1", component[1], perl=TRUE), labs[3])
@@ -126,7 +137,7 @@ my.plot = function(ages, years, z, labs=c("X", "Y", "Z"))
                    plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
                    plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
   } else {
-    filled.contour(ages, years, z, color = my.colors,
+    filled.contour(ages, years, z, color = function(n) rainbow(n, start=0.0, end=0.7),
                    plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
                    plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
   }
