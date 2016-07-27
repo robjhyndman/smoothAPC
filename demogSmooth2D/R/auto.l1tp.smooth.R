@@ -116,7 +116,7 @@ estAA = function(data,
   for(i in seq_along(lambdas)) {
     if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
     cv[i] <- smoothCv(demogSmooth.wrapper, data = data,
-                      lambda = 1, lambdaaa = lambdas[i], lambdayy = 0.01*lambdas[i], lambdaay = 0.01*lambdas[i],
+                      lambda = 1, lambdaaa = lambdas[i], lambdayy = 0, lambdaay = 0,
                       effects = FALSE, control = control)$MAE
     if(trace) {print(paste("lambdaAA:", lambdas[i])); print(cv[i])}
   }
@@ -135,7 +135,7 @@ estYY = function(data,
   for(i in seq_along(lambdas)) {
     if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
     cv[i] <- smoothCv(demogSmooth.wrapper, data = data,
-                      lambda = 1, lambdaaa = 0.01*lambdas[i], lambdayy = lambdas[i], lambdaay = 0.01*lambdas[i],
+                      lambda = 1, lambdaaa = 0, lambdayy = lambdas[i], lambdaay = 0,
                       effects = FALSE, control = control)$MAE
     if(trace) {print(paste("lambdaYY:", lambdas[i])); print(cv[i])}
   }
@@ -148,6 +148,7 @@ estYY = function(data,
 #' If period and cohort effects are taken into account (effects = TRUE) the method uses all
 #' available years and diagonals for estimation of the period and cohort effects.
 #'
+#' @seealso \code{\link{twoStepDemogSmooth}} might give slightly better performance.
 #' @param data Demographic data presented as a matrix.
 #' @param effects Controls if the cohort and period effects are taking into account.
 #' @param cornerLength Sets the smallest length of a digonal to be considered for cohort effects.
@@ -247,7 +248,11 @@ getAffected = function(resid, p.value = 0.05)
 
 
 #' Smoothes demographic data using automatically estimated parameters and
-#' taking into account only significant period and cohort effects
+#' taking into account only significant period and cohort effects.
+#'
+#' It is a heuristic procedure which tries to figure out positions of
+#' period and cohort effects in the data. It also uses a few steps to estimate
+#' model's parameters. The procedure is supposed to outperform \code{\link{autoDemogSmooth}} slightly.
 #'
 #' @param data Demographic data presented as a matrix.
 #' @param p.value P-value used to test effects for significance.
@@ -307,12 +312,12 @@ twoStepDemogSmooth = function(data,
   result1 = demogSmooth(resid,
                        lambda = 1,
                        lambdaaa = lambdaYearsEffect,
-                       lambdayy = 0.01*lambdaYearsEffect,
-                       lambdaay = 0.01*lambdaYearsEffect,
+                       lambdayy = 0,
+                       lambdaay = 0,
                        effects = F,
                        control = control)
   vals = colSums(abs(result1$result))
-  k = ceiling(length(vals)*0.15)
+  k = min(ceiling(length(vals)*0.15) , sum(vals > 2*mean(vals)))
   n <- length(vals)
   colsNA = which(vals >= sort(vals, partial = n-k+1)[n-k+1])
   dataNA = data
@@ -325,13 +330,6 @@ twoStepDemogSmooth = function(data,
                         reltol = reltol,
                         trace = trace,
                         control = control)$par
-  # result2 = demogSmooth(data,
-  #                      lambda = 1,
-  #                      lambdaaa = parametersNA[1],
-  #                      lambdayy = parametersNA[2],
-  #                      lambdaay = parametersNA[3],
-  #                      effects = FALSE,
-  #                      control = control)
   resid2 = smoothCv(demogSmooth.wrapper,
                    data = data,
                    lambda = 1,
@@ -341,12 +339,43 @@ twoStepDemogSmooth = function(data,
                    effects = FALSE,
                    control = control)$cvResiduals
   affd = getAffected(resid2, p.value = p.value)
-  # affd$affdYears = sort(union(affd$affdYears, colsNA))
+  affd$affdYears = sort(union(affd$affdYears, colsNA))
+  # Estimating also taking into account period and cohort effects
   parameters = estPar(data,
                       effects = TRUE,
                       affdDiagonals = affd$affdDiagonals,
                       affdYears = affd$affdYears,
                       parameters = c(parametersNA,lambdaYearsEffect,init[5],lambdaYearsEffect,init[7]),
+                      cornerLength = cornerLength,
+                      lower = lower,
+                      upper = upper,
+                      init = init,
+                      reltol = reltol,
+                      trace = trace,
+                      control = control)$par
+  result = demogSmooth(data,
+                       lambda = 1,
+                       lambdaaa = parameters[1],
+                       lambdayy = parameters[2],
+                       lambdaay = parameters[3],
+                       lambdaYearsEffect = parameters[4],
+                       thetaYearsEffect = parameters[5],
+                       lambdaCohortEffect = parameters[6],
+                       thetaCohortEffect = parameters[7],
+                       cornerLength = cornerLength,
+                       effects = TRUE,
+                       affdDiagonals = affd$affdDiagonals,
+                       affdYears = affd$affdYears,
+                       control = control)
+  residuals = result$original - result$result - result$yearsEffect - result$cohortEffect
+  # Removing very small period effects:
+  affd$affdYears = which(colSums(result$yearsEffect) > 2 * mean(abs(residuals)))
+  # Reestimating
+  parameters = estPar(data,
+                      effects = TRUE,
+                      affdDiagonals = affd$affdDiagonals,
+                      affdYears = affd$affdYears,
+                      parameters = parameters,
                       cornerLength = cornerLength,
                       lower = lower,
                       upper = upper,
