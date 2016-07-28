@@ -317,11 +317,14 @@ twoStepDemogSmooth = function(data,
                        effects = F,
                        control = control)
   vals = colSums(abs(result1$result))
-  k = min(ceiling(length(vals)*0.15) , sum(vals > 2*mean(vals)))
-  n <- length(vals)
-  colsNA = which(vals >= sort(vals, partial = n-k+1)[n-k+1])
   dataNA = data
-  dataNA[,colsNA] = NA
+  colsNA = NULL
+  k = min(ceiling(length(vals)*0.15) , sum(vals > 2*mean(vals)))
+  if(k > 0) {
+    n <- length(vals)
+    colsNA = which(vals >= sort(vals, partial = n-k+1)[n-k+1])
+    dataNA[,colsNA] = NA
+  }
   parametersNA = estPar(dataNA,
                         effects = FALSE,
                         lower = lower[1:3],
