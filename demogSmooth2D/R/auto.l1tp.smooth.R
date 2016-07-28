@@ -268,7 +268,7 @@ getAffected = function(resid, p.value = 0.05)
 #' used for smoothing, diagonals used for cohort effects and years used for period effects.
 #' @examples
 #' # library(demography)
-#' m = log(fr.mort$rate$female[1:30, 120:139])
+#' # m = log(fr.mort$rate$female[1:30, 120:139])
 #' # Show(m)
 #' # sm = twoStepDemogSmooth(m)
 #' # plot(sm)
