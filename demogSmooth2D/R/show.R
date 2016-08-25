@@ -1,5 +1,19 @@
-library(rgl)
-library(colorspace)
+#' @importFrom rgl open3d
+#' @importFrom rgl lines3d
+#' @importFrom rgl rgl.bringtotop
+#' @importFrom rgl persp3d
+#' @importFrom rgl title3d
+#' @importFrom colorspace hex
+#' @importFrom colorspace polarLUV
+#' @importFrom grDevices rainbow
+#' @importFrom graphics axis
+#' @importFrom graphics filled.contour
+#' @importFrom graphics title
+#' @importFrom methods new
+#' @importFrom stats na.omit
+#' @importFrom stats optim
+#' @importFrom utils head
+
 
 show = function(x, y, z,
                 title="",
@@ -54,6 +68,7 @@ show = function(x, y, z,
 #' @param x Result of smoothing (object of class \code{sm2D}).
 #' @param component "smooth", "period", "cohort", "residuals" or "original"
 #' @param labs Vector of lables for X, Y and Z axes.
+#' @param ... Other parameters.
 #' @examples
 #' # library(demography)
 #' # m = log(fr.mort$rate$female[1:30, 150:160])
@@ -69,7 +84,8 @@ show = function(x, y, z,
 
 plot.sm2D = function(x,
                      component = c("all", "surface", "period", "cohort", "residuals", "original"),
-                     labs=c("Age", "Time", NA))
+                     labs=c("Age", "Time", NA),
+                     ...)
 {
   if(!(component[1] %in% c("all", "surface", "period", "cohort", "residuals", "original")))
     stop("Incorrect component.")
@@ -133,11 +149,11 @@ my.colors =
 my.plot = function(ages, years, z, labs=c("X", "Y", "Z"))
 {
   if(max(z)>0 && min(z)<0) {
-    filled.contour(ages, years, z, zlim = c(-max(abs(z)), max(abs(z))), color = my.colors,
+    filled.contour(ages, years, z, zlim = c(-max(abs(z)), max(abs(z))), color.palette = my.colors,
                    plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
                    plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
   } else {
-    filled.contour(ages, years, z, color = function(n) rainbow(n, start=0.0, end=0.7),
+    filled.contour(ages, years, z, color.palette = function(n) rainbow(n, start=0.0, end=0.7),
                    plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
                    plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
   }

@@ -1,7 +1,8 @@
-require(compiler)
-require(quantreg)
-require(stats)
-require(lmtest)
+#' @importFrom compiler cmpfun
+#' @importFrom quantreg rq.fit.sfn
+#' @importFrom stats t.test
+#' @import lmtest
+#' @importFrom SparseM as.matrix.csr
 
 append = cmpfun(function(env, val, i, j) {
   b <- env$l + 1L
