@@ -70,15 +70,19 @@ show = function(x, y, z,
 #' @param labs Vector of lables for X, Y and Z axes.
 #' @param ... Other parameters.
 #' @examples
-#' # library(demography)
-#' # m = log(fr.mort$rate$female[1:30, 150:160])
-#' # sm = autoDemogSmooth(m)
-#' #
-#' # plot(sm)
-#' # plot(sm, "cohort")
-#' # plot(sm, "period")
-#' # plot(sm, "residuals")
-#' # plot(sm, "original")
+#' \dontrun{
+#'
+#' library(demography)
+#' m = log(fr.mort$rate$female[1:30, 150:160])
+#' sm = autoDemogSmooth(m)
+#'
+#' plot(sm)
+#' plot(sm, "cohort")
+#' plot(sm, "period")
+#' plot(sm, "residuals")
+#' plot(sm, "original")
+#'
+#' }
 #' @author Alex Dokumentov
 #' @export
 
