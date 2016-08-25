@@ -1,5 +1,3 @@
-require(compiler)
-
 cvPoints.nc = function(k, mini, maxi, maxj)
 {
   k = (k+2) %% 5

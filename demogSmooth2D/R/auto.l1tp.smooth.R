@@ -30,11 +30,15 @@ demogSmooth.wrapper = function(...)
 #' @param control The control data passed directly to rq.fit.sfn method (quantreg package).
 #' @return A vector of optimal smoothing parameters.
 #' @examples
-#' # library(demography)
-#' # m = log(fr.mort$rate$female[1:30, 150:160])
-#' # parameters = estPar(m)
+#' \dontrun{
+#'
+#' library(demography)
+#' m = log(fr.mort$rate$female[1:30, 150:160])
+#' parameters = estPar(m)
+#'
+#' }
 #' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
-#' @author Alex Dokumentov
+#' @author Alexander Dokumentov
 #' @export
 
 estPar = function(data,
@@ -164,15 +168,19 @@ estYY = function(data,
 #' @return A list with four components: smooth surface, period effects, cohort effects and parameters
 #' used for smoothing (passed as a parameter or estimated).
 #' @examples
-#' # library(demography)
-#' # m = log(fr.mort$rate$female[1:30, 150:160])
-#' # Show(m)
-#' # sm = autoDemogSmooth(m)
-#' # plot(sm)
-#' # plot(sm, "period")
-#' # plot(sm, "cohort")
+#' \dontrun{
+#'
+#' library(demography)
+#' m = log(fr.mort$rate$female[1:30, 150:160])
+#' Show(m)
+#' sm = autoDemogSmooth(m)
+#' plot(sm)
+#' plot(sm, "period")
+#' plot(sm, "cohort")
+#'
+#' }
 #' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
-#' @author Alex Dokumentov
+#' @author Alexander Dokumentov
 #' @export
 
 autoDemogSmooth = function(data,
@@ -267,16 +275,20 @@ getAffected = function(resid, p.value = 0.05)
 #' @return A list with six components: smooth surface, period effects, cohort effects, parameters
 #' used for smoothing, diagonals used for cohort effects and years used for period effects.
 #' @examples
-#' # library(demography)
-#' # m = log(fr.mort$rate$female[1:30, 120:139])
-#' # Show(m)
-#' # sm = twoStepDemogSmooth(m)
-#' # plot(sm)
-#' # plot(sm, "surface")
-#' # plot(sm, "period")
-#' # plot(sm, "cohort")
+#' \dontrun{
+#'
+#' library(demography)
+#' m = log(fr.mort$rate$female[1:30, 120:139])
+#' Show(m)
+#' sm = twoStepDemogSmooth(m)
+#' plot(sm)
+#' plot(sm, "surface")
+#' plot(sm, "period")
+#' plot(sm, "cohort")
+#'
+#' }
 #' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
-#' @author Alex Dokumentov
+#' @author Alexander Dokumentov
 #' @export
 
 twoStepDemogSmooth = function(data,

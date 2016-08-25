@@ -2,7 +2,7 @@ Package: demogSmooth2D
 Version: 0.1
 Date: 2016-08-25
 Title: Smoothing of Two-Dimensional Demographic Data, Optionally Taking into Account Period and Cohort Effects
-Author: Alexander Dokumentov and Rob J. Hyndman
+Author: Alexander Dokumentov and Rob J Hyndman
 Maintainer: Alexander Dokumentov <alexander.dokumentov@gmail.com>
 Depends: R (>= 3.2.2)
 Imports: quantreg, SparseM, compiler, lmtest, stats, rgl, colorspace, methods

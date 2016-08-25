@@ -1,8 +1,8 @@
 #' @importFrom compiler cmpfun
 #' @importFrom quantreg rq.fit.sfn
 #' @importFrom stats t.test
-#' @import lmtest
 #' @importFrom SparseM as.matrix.csr
+
 
 append = cmpfun(function(env, val, i, j) {
   b <- env$l + 1L
@@ -381,13 +381,17 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' @param control Control data passed directly to rq.fit.sfn method (quantreg package).
 #' @return List with three components: smooth surface, period effects, cohort effects.
 #' @examples
-#' # library(demography)
-#' # m = log(fr.mort$rate$female[1:30, 150:160])
-#' # sm = demogSmooth(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
-#' # plot(sm, "original")
-#' # plot(sm)
+#' \dontrun{
+#'
+#' library(demography)
+#' m = log(fr.mort$rate$female[1:30, 150:160])
+#' sm = demogSmooth(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
+#' plot(sm, "original")
+#' plot(sm)
+#'
+#' }
 #' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
-#' @author Alex Dokumentov
+#' @author Alexander Dokumentov
 #' @export
 
 demogSmooth = cmpfun(l1tp.smooth.demogdata.nc)
