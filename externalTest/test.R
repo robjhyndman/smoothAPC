@@ -2,6 +2,9 @@ library(demography)
 m = log(fr.mort$rate$female[1:30, 150:160])
 sm = autoDemogSmooth(m)
 
+sm
+print(sm)
+
 plot(sm)
 plot(sm, "surface", types = "2D")
 plot(sm, "cohort")
