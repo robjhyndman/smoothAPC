@@ -15,7 +15,7 @@
 #' @importFrom utils head
 
 
-show = function(x, y, z,
+plot3D = function(x, y, z,
                 title="",
                 labs = c("Age", "Time", "Value"),
                 aspect = c(1, 1, 0.6),
@@ -63,12 +63,13 @@ show = function(x, y, z,
   rgl.bringtotop()
 }
 
-#' Presents demographic data using 3D surface and a heatmap.
+#' Presents demographic data using 3D surface and/or a heatmap.
 #'
 #' @param x Result of smoothing (object of class \code{sm2D}).
 #' @param component "smooth", "period", "cohort", "residuals" or "original"
 #' @param labs Vector of labels for X, Y and Z axes.
-#' @param ... Other parameters.
+#' @param types Vector of plot types to plot. Possible types are \code{"2D"} and \code{"3D"}. Default value for the parameter is \code{c("3D", "2D")}.
+#' @param ... Other parameters. They are currently ignored.
 #' @examples
 #' \dontrun{
 #'
@@ -77,18 +78,20 @@ show = function(x, y, z,
 #' sm = autoDemogSmooth(m)
 #'
 #' plot(sm)
+#' plot(sm, "surface")
 #' plot(sm, "cohort")
 #' plot(sm, "period")
 #' plot(sm, "residuals")
 #' plot(sm, "original")
 #'
 #' }
-#' @author Alex Dokumentov
+#' @author Alexander Dokumentov
 #' @export
 
 plot.sm2D = function(x,
                      component = c("all", "surface", "period", "cohort", "residuals", "original"),
-                     labs=c("Age", "Time", NA),
+                     labs = c("Age", "Time", NA),
+                     types = c("3D", "2D"),
                      ...)
 {
   if(!(component[1] %in% c("all", "surface", "period", "cohort", "residuals", "original")))
@@ -112,23 +115,29 @@ plot.sm2D = function(x,
     x$original
   )
   labs[3] = ifelse(is.na(labs[3]), gsub("(^[[:alpha:]])", "\\U\\1", component[1], perl=TRUE), labs[3])
-  Show(data, labs)
+  plot.matrix(z = data, labs = labs, types = types)
 }
 
-#' Presents matrix as 3D surface and a heatmap.
+#' Presents matrix as 3D surface and/or a heatmap.
 #'
-#' @param z Matrix.
+#' @param x Matrix to plot.
 #' @param labs Vector of lables for X, Y and Z axes.
+#' @param types Vector of plot types to plot. Possible types are \code{"2D"} and \code{"3D"}. Default value for the parameter is \code{c("3D", "2D")}.
+#' @param ... Other parameters. They are currently ignored.
 #' @examples
-#' # Show(matrix(rnorm(100),10,10))
-#' # Show(matrix(1:100,10,10), c("Dimension 1", "Dimension 2", "Value"))
-#' @author Alex Dokumentov
+#' \dontrun{
+#'
+#' plot(matrix(rnorm(100),10,10))
+#' plot(matrix(1:100,10,10), c("Dimension 1", "Dimension 2", "Value"))
+#'
+#' }
+#' @author Alexander Dokumentov
 #' @export
 
-Show = function(z, labs=c("X", "Y", "Z"))
+plot.matrix = function(x, labs = c("X", "Y", "Z"), types = c("2D", "3D"), ...)
 {
-  show(1:dim(z)[1], 1:dim(z)[2], z, labs=labs)
-  my.plot(1:dim(z)[1], 1:dim(z)[2], z, labs=labs)
+  if("3D" %in% types) plot3D(1:dim(x)[1], 1:dim(x)[2], x, labs = labs)
+  if("2D" %in% types) plot2D(1:dim(x)[1], 1:dim(x)[2], x, labs = labs)
 }
 
 my.colors =
@@ -150,7 +159,7 @@ my.colors =
   return(rval)
 }
 
-my.plot = function(ages, years, z, labs=c("X", "Y", "Z"))
+plot2D = function(ages, years, z, labs=c("X", "Y", "Z"))
 {
   if(max(z)>0 && min(z)<0) {
     filled.contour(ages, years, z, zlim = c(-max(abs(z)), max(abs(z))), color.palette = my.colors,
