@@ -1,4 +1,4 @@
 library(testthat)
-library(demogSmooth2D)
+library(smooth2D)
 
-test_check("demogSmooth2D")
+test_check("smooth2D")

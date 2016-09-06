@@ -67,7 +67,7 @@ show = function(x, y, z,
 #'
 #' @param x Result of smoothing (object of class \code{sm2D}).
 #' @param component "smooth", "period", "cohort", "residuals" or "original"
-#' @param labs Vector of lables for X, Y and Z axes.
+#' @param labs Vector of labels for X, Y and Z axes.
 #' @param ... Other parameters.
 #' @examples
 #' \dontrun{

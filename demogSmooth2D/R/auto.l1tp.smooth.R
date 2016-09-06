@@ -18,13 +18,13 @@ demogSmooth.wrapper = function(...)
 #'
 #' @param data Demographic data presented as a matrix.
 #' @param effects Controls if the cohort and period effects are taking into account.
-#' @param cornerLength Sets the smallest length of a digonal to be considered for cohort effects. The first diagonal is at the lowerest left conner of data matrix.
+#' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects. The first diagonal is at the lowerest left corner of the data matrix.
 #' @param affdDiagonals Diagonals to be used for cohort effects.
 #' @param affdYears Years to be used for period effects.
 #' @param parameters Optional vector with some initial values to replace values in init parameter.
-#' @param lower Lowest possible values for the optimisation procedure.
-#' @param upper Highest possible values for the optimisation procedure.
-#' @param init Initial values for the optimisation procedure.
+#' @param lower Lowest possible values for the optimization procedure.
+#' @param upper Highest possible values for the optimization procedure.
+#' @param init Initial values for the optimization procedure.
 #' @param reltol Relative tolerance parameter to be supplied to optim function (standard optimiser for R).
 #' @param trace Controls if tracing is on.
 #' @param control The control data passed directly to rq.fit.sfn method (quantreg package).
@@ -37,7 +37,7 @@ demogSmooth.wrapper = function(...)
 #' parameters = estPar(m)
 #'
 #' }
-#' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
+#' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
 #' @export
 
@@ -155,17 +155,17 @@ estYY = function(data,
 #' @seealso \code{\link{twoStepDemogSmooth}} might give slightly better performance.
 #' @param data Demographic data presented as a matrix.
 #' @param effects Controls if the cohort and period effects are taking into account.
-#' @param cornerLength Sets the smallest length of a digonal to be considered for cohort effects.
-#' @param affdDiagonals Diagonals to be used for cohort effects. The first diagonal is at the lowerest left conner of data matrix.
+#' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
+#' @param affdDiagonals Diagonals to be used for cohort effects. The first diagonal is at the lowerest left corner of the data matrix.
 #' @param affdYears Years to be used for period effects.
-#' @param lower Lowest possible values for the optimisation procedure.
-#' @param upper Highest possible values for the optimisation procedure.
-#' @param init Initial values for the optimisation procedure.
-#' @param reltol Relative tolerance parameter to be supplied to optim function (standard optimiser for R).
-#' @param parameters Optional parameters (output of estPar function). If not provied the parameters are estimated inside the function.
+#' @param lower Lowest possible values for the optimization procedure.
+#' @param upper Highest possible values for the optimization procedure.
+#' @param init Initial values for the optimization procedure.
+#' @param reltol Relative tolerance parameter to be supplied to optim function (standard optimizer for R).
+#' @param parameters Optional parameters (output of estPar function). If not provided the parameters are estimated inside the function.
 #' @param trace Controls if tracing is on.
 #' @param control The control data passed directly to rq.fit.sfn method (quantreg package).
-#' @return A list with four components: smooth surface, period effects, cohort effects and parameters
+#' @return A list of four components: smooth surface, period effects, cohort effects and parameters
 #' used for smoothing (passed as a parameter or estimated).
 #' @examples
 #' \dontrun{
@@ -179,7 +179,7 @@ estYY = function(data,
 #' plot(sm, "cohort")
 #'
 #' }
-#' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
+#' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
 #' @export
 
@@ -255,7 +255,7 @@ getAffected = function(resid, p.value = 0.05)
 }
 
 
-#' Smoothes demographic data using automatically estimated parameters and
+#' Smooths demographic data using automatically estimated parameters and
 #' taking into account only significant period and cohort effects.
 #'
 #' It is a heuristic procedure which tries to figure out positions of
@@ -263,16 +263,16 @@ getAffected = function(resid, p.value = 0.05)
 #' model's parameters. The procedure is supposed to outperform \code{\link{autoDemogSmooth}} slightly.
 #'
 #' @param data Demographic data presented as a matrix.
-#' @param p.value P-value used to test effects for significance.
-#' The lower the value the less diagonals and years will be used to find cohort and period effects.
-#' @param cornerLength Sets the smallest length of a digonal to be considered for cohort effects.
-#' @param lower Lowest possible values for the optimisation procedure.
-#' @param upper Highest possible values for the optimisation procedure.
-#' @param init Initial values for the optimisation procedure.
-#' @param reltol Relative tolerance parameter to be supplied to optim function (standard optimiser for R).
+#' @param p.value P-value used to test the period and the cohort effects for significance.
+#' The lower the value the fewer diagonals and years will be used to find cohort and period effects.
+#' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
+#' @param lower Lowest possible values for the optimization procedure.
+#' @param upper Highest possible values for the optimization procedure.
+#' @param init Initial values for the optimization procedure.
+#' @param reltol Relative tolerance parameter to be supplied to optim function (standard optimizer for R).
 #' @param trace Controls if tracing is on.
 #' @param control The control data passed directly to rq.fit.sfn method (quantreg package).
-#' @return A list with six components: smooth surface, period effects, cohort effects, parameters
+#' @return A list of six components: smooth surface, period effects, cohort effects, parameters
 #' used for smoothing, diagonals used for cohort effects and years used for period effects.
 #' @examples
 #' \dontrun{
@@ -287,7 +287,7 @@ getAffected = function(resid, p.value = 0.05)
 #' plot(sm, "cohort")
 #'
 #' }
-#' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
+#' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
 #' @export
 

@@ -363,23 +363,23 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
   return(result)
 }
 
-#' Smoothes demographic data optionally taking into account period and cohort effects
+#' Smooths demographic data optionally taking into account period and cohort effects
 #'
 #' @param data Demographic data presented as a matrix.
 #' @param lambda Controls "general flexibility" of the smooth surface.
-#' @param lambdaaa Controls "flexibility" of the smooth surface in age direction (first dimention).
-#' @param lambdayy Controls "flexibility" of the smooth surface in years direction (second dimention).
+#' @param lambdaaa Controls "flexibility" of the smooth surface in age direction (first dimension).
+#' @param lambdayy Controls "flexibility" of the smooth surface in years direction (second dimension).
 #' @param lambdaay Controls "flexibility" of the smooth surface in age and years directions.
 #' @param lambdaYearsEffect Controls "flexibility" of the period effects.
-#' @param thetaYearsEffect Reduces likelihood of period effects.
+#' @param thetaYearsEffect Reduces the likelihood of period effects.
 #' @param lambdaCohortEffect Controls "flexibility" of the cohort effects.
-#' @param thetaCohortEffect Reduces likelihood of cohort effects.
-#' @param cornerLength Sets the smallest length of a digonal to be considered for cohort effects.
+#' @param thetaCohortEffect Reduces the likelihood of cohort effects.
+#' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
 #' @param effects Controls if the cohort and period effects are taking into account.
 #' @param affdDiagonals Diagonals to be used for cohort effects.
 #' @param affdYears Years to be used for period effects.
 #' @param control Control data passed directly to rq.fit.sfn method (quantreg package).
-#' @return List with three components: smooth surface, period effects, cohort effects.
+#' @return List of three components: smooth surface, period effects, cohort effects.
 #' @examples
 #' \dontrun{
 #'
@@ -390,7 +390,7 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' plot(sm)
 #'
 #' }
-#' @references \url{https://business.monash.edu/econometrics-and-business-statistics/research/publications/ebs/two-dimensional_smoothing_of_mortality_rates..pdf}
+#' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
 #' @export
 

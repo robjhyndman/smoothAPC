@@ -1,4 +1,4 @@
-Package: demogSmooth2D
+Package: smooth2D
 Version: 0.1
 Date: 2016-08-25
 Title: Smoothing of Two-Dimensional Demographic Data, Optionally Taking into Account Period and Cohort Effects
