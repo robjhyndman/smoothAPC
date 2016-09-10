@@ -114,8 +114,9 @@ plot.sm2D = function(x,
     },
     x$original
   )
+  if(is.null(data)) stop(paste0('Component "', component[1], '" cannot be extracted.'))
   labs[3] = ifelse(is.na(labs[3]), gsub("(^[[:alpha:]])", "\\U\\1", component[1], perl=TRUE), labs[3])
-  plot.matrix(z = data, labs = labs, types = types)
+  plot.matrix(x = data, labs = labs, types = types)
 }
 
 #' Presents matrix as 3D surface and/or a heatmap.
