@@ -16,6 +16,16 @@
 
 print.sm2D = function(x, ...)
 {
-  cat("\nObject of class sm2D")
+  translate = list(
+    cohortEffect = "Extracted cohort effects",
+    original = "Original data",
+    parameters = "Estimated parameters",
+    result = "Smooth surface",
+    yearsEffect = "Extracted period effects"
+  )
+  cat("Object of class sm2D with components:")
+  for(component in sort(ls(x))) {
+    cat("\n\t"); cat(translate[[component]])
+  }
   return(invisible(x))
 }
