@@ -14,32 +14,32 @@ demogSmooth.wrapper = function(...)
 }
 
 
-#' Estimates smoothing parameters
-#'
-#' @param data Demographic data presented as a matrix.
-#' @param effects Controls if the cohort and period effects are taking into account.
-#' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects. The first diagonal is at the lowerest left corner of the data matrix.
-#' @param affdDiagonals Diagonals to be used for cohort effects.
-#' @param affdYears Years to be used for period effects.
-#' @param parameters Optional vector with some initial values to replace values in init parameter.
-#' @param lower Lowest possible values for the optimization procedure.
-#' @param upper Highest possible values for the optimization procedure.
-#' @param init Initial values for the optimization procedure.
-#' @param reltol Relative tolerance parameter to be supplied to optim function (standard optimiser for R).
-#' @param trace Controls if tracing is on.
-#' @param control The control data passed directly to rq.fit.sfn method (quantreg package).
-#' @return A vector of optimal smoothing parameters.
-#' @examples
-#' \dontrun{
-#'
-#' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 150:160])
-#' parameters = estPar(m)
-#'
-#' }
-#' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
-#' @author Alexander Dokumentov
-#' @export
+# Estimates smoothing parameters
+#
+# @param data Demographic data presented as a matrix.
+# @param effects Controls if the cohort and period effects are taking into account.
+# @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects. The first diagonal is at the lowerest left corner of the data matrix.
+# @param affdDiagonals Diagonals to be used for cohort effects.
+# @param affdYears Years to be used for period effects.
+# @param parameters Optional vector with some initial values to replace values in init parameter.
+# @param lower Lowest possible values for the optimization procedure.
+# @param upper Highest possible values for the optimization procedure.
+# @param init Initial values for the optimization procedure.
+# @param reltol Relative tolerance parameter to be supplied to optim function (standard optimiser for R).
+# @param trace Controls if tracing is on.
+# @param control The control data passed directly to rq.fit.sfn method (quantreg package).
+# @return A vector of optimal smoothing parameters.
+# @examples
+# \dontrun{
+#
+# library(demography)
+# m = log(fr.mort$rate$female[1:30, 150:160])
+# parameters = estPar(m)
+#
+# }
+# @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
+# @author Alexander Dokumentov
+# @export
 
 estPar = function(data,
                   effects = TRUE,
