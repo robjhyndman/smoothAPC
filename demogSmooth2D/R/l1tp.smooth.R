@@ -389,7 +389,7 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #'
 #' library(demography)
 #' m = log(fr.mort$rate$female[1:30, 150:160])
-#' sm = demogSmooth(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
+#' sm = smooth2D(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
 #' plot(sm, "original")
 #' plot(sm)
 #'
@@ -398,4 +398,4 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' @author Alexander Dokumentov
 #' @export
 
-demogSmooth = cmpfun(l1tp.smooth.demogdata.nc)
+smooth2D = cmpfun(l1tp.smooth.demogdata.nc)

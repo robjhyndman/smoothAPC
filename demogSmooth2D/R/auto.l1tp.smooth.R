@@ -1,6 +1,6 @@
-demogSmooth.wrapper = function(...)
+smooth2D.wrapper = function(...)
 {
-  tryCatch((result = demogSmooth(...)),
+  tryCatch((result = smooth2D(...)),
            error = function(e) {
              cat("\n\nERROR\n\n")
              print(e)
@@ -82,7 +82,7 @@ estPar = function(data,
     lambdaCohortEffect <- x[6]
     thetaCohortEffect <- x[7]
     # time = system.time({
-    cv <- smoothCv(demogSmooth.wrapper, data = data,
+    cv <- smoothCv(smooth2D.wrapper, data = data,
                    lambda = 1, lambdaaa = lambdaaa, lambdayy = lambdayy, lambdaay = lambdaay,
                    lambdaYearsEffect = lambdaYearsEffect, thetaYearsEffect = thetaYearsEffect,
                    lambdaCohortEffect = lambdaCohortEffect, thetaCohortEffect = thetaCohortEffect,
@@ -119,7 +119,7 @@ estAA = function(data,
   cv = 0
   for(i in seq_along(lambdas)) {
     if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
-    cv[i] <- smoothCv(demogSmooth.wrapper, data = data,
+    cv[i] <- smoothCv(smooth2D.wrapper, data = data,
                       lambda = 1, lambdaaa = lambdas[i], lambdayy = 0, lambdaay = 0,
                       effects = FALSE, control = control)$MAE
     if(trace) {print(paste("lambdaAA:", lambdas[i])); print(cv[i])}
@@ -138,7 +138,7 @@ estYY = function(data,
   cv = 0
   for(i in seq_along(lambdas)) {
     if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
-    cv[i] <- smoothCv(demogSmooth.wrapper, data = data,
+    cv[i] <- smoothCv(smooth2D.wrapper, data = data,
                       lambda = 1, lambdaaa = 0, lambdayy = lambdas[i], lambdaay = 0,
                       effects = FALSE, control = control)$MAE
     if(trace) {print(paste("lambdaYY:", lambdas[i])); print(cv[i])}
@@ -152,7 +152,7 @@ estYY = function(data,
 #' If period and cohort effects are taken into account (effects = TRUE) the method uses all
 #' available years and diagonals for estimation of the period and cohort effects.
 #'
-#' @seealso \code{\link{twoStepDemogSmooth}} might give slightly better performance.
+#' @seealso \code{\link{signifAutoSmooth2D}} might give slightly better performance.
 #' @param data Demographic data presented as a matrix.
 #' @param effects Controls if the cohort and period effects are taking into account.
 #' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
@@ -162,7 +162,7 @@ estYY = function(data,
 #' @param upper Highest possible values for the optimization procedure.
 #' @param init Initial values for the optimization procedure.
 #' @param reltol Relative tolerance parameter to be supplied to optim function (standard optimizer for R).
-#' @param parameters Optional parameters (output of estPar function). If not provided the parameters are estimated inside the function.
+#' @param parameters Optional model parameters. If not provided, they are estimated.
 #' @param trace Controls if tracing is on.
 #' @param control The control data passed directly to rq.fit.sfn method (quantreg package).
 #' @return A list of four components: smooth surface, period effects, cohort effects and parameters
@@ -173,7 +173,7 @@ estYY = function(data,
 #' library(demography)
 #' m = log(fr.mort$rate$female[1:30, 150:160])
 #' Show(m)
-#' sm = autoDemogSmooth(m)
+#' sm = autoSmooth2D(m)
 #' plot(sm)
 #' plot(sm, "period")
 #' plot(sm, "cohort")
@@ -183,7 +183,7 @@ estYY = function(data,
 #' @author Alexander Dokumentov
 #' @export
 
-autoDemogSmooth = function(data,
+autoSmooth2D = function(data,
                            effects = TRUE,
                            cornerLength = 7,
                            affdDiagonals = NULL,
@@ -209,7 +209,7 @@ autoDemogSmooth = function(data,
                         trace = trace,
                         control = control)$par
   }
-  result = demogSmooth(data,
+  result = smooth2D(data,
                        lambda = 1,
                        lambdaaa = parameters[1],
                        lambdayy = parameters[2],
@@ -260,7 +260,7 @@ getAffected = function(resid, p.value = 0.05)
 #'
 #' It is a heuristic procedure which tries to figure out positions of
 #' period and cohort effects in the data. It also uses a few steps to estimate
-#' model's parameters. The procedure is supposed to outperform \code{\link{autoDemogSmooth}} slightly.
+#' model's parameters. The procedure is supposed to outperform \code{\link{autoSmooth2D}} slightly.
 #'
 #' @param data Demographic data presented as a matrix.
 #' @param p.value P-value used to test the period and the cohort effects for significance.
@@ -280,7 +280,7 @@ getAffected = function(resid, p.value = 0.05)
 #' library(demography)
 #' m = log(fr.mort$rate$female[1:30, 120:139])
 #' Show(m)
-#' sm = twoStepDemogSmooth(m)
+#' sm = signifAutoSmooth2D(m)
 #' plot(sm)
 #' plot(sm, "surface")
 #' plot(sm, "period")
@@ -291,7 +291,7 @@ getAffected = function(resid, p.value = 0.05)
 #' @author Alexander Dokumentov
 #' @export
 
-twoStepDemogSmooth = function(data,
+signifAutoSmooth2D = function(data,
                               p.value = 0.05,
                               cornerLength = 7,
                               lower = c(0.01, 0.01, 0.01, 1.0, 0.001, 1.0, 0.001),
@@ -307,7 +307,7 @@ twoStepDemogSmooth = function(data,
                    step = abs(upper[2]-lower[2])/20,
                    trace = trace,
                    control = control)
-  resid = smoothCv(demogSmooth.wrapper,
+  resid = smoothCv(smooth2D.wrapper,
                    data = data,
                    lambda = 1,
                    lambdaaa = 0,
@@ -321,7 +321,7 @@ twoStepDemogSmooth = function(data,
                            step = abs(upper[4]-lower[4])/20,
                            trace = trace,
                            control = control)
-  result1 = demogSmooth(resid,
+  result1 = smooth2D(resid,
                        lambda = 1,
                        lambdaaa = lambdaYearsEffect,
                        lambdayy = 0,
@@ -345,7 +345,7 @@ twoStepDemogSmooth = function(data,
                         reltol = reltol,
                         trace = trace,
                         control = control)$par
-  resid2 = smoothCv(demogSmooth.wrapper,
+  resid2 = smoothCv(smooth2D.wrapper,
                    data = data,
                    lambda = 1,
                    lambdaaa = parametersNA[1],
@@ -368,7 +368,7 @@ twoStepDemogSmooth = function(data,
                       reltol = reltol,
                       trace = trace,
                       control = control)$par
-  result = demogSmooth(data,
+  result = smooth2D(data,
                        lambda = 1,
                        lambdaaa = parameters[1],
                        lambdayy = parameters[2],
@@ -398,7 +398,7 @@ twoStepDemogSmooth = function(data,
                       reltol = reltol,
                       trace = trace,
                       control = control)$par
-  result = demogSmooth(data,
+  result = smooth2D(data,
                        lambda = 1,
                        lambdaaa = parameters[1],
                        lambdayy = parameters[2],
