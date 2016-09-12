@@ -3,8 +3,10 @@
 #' @importFrom rgl rgl.bringtotop
 #' @importFrom rgl persp3d
 #' @importFrom rgl title3d
+#' @importFrom rgl axis3d
 #' @importFrom colorspace hex
 #' @importFrom colorspace polarLUV
+#' @importFrom colorspace heat_hcl
 #' @importFrom grDevices rainbow
 #' @importFrom graphics axis
 #' @importFrom graphics filled.contour
@@ -19,47 +21,26 @@ plot3D = function(x, y, z,
                 title="",
                 labs = c("Age", "Time", "Value"),
                 aspect = c(1, 1, 0.6),
-                grid,
-                gridCol = "red",
-                type = 2,
-                color.pallete = function(n) rainbow(n, start=0.0, end=0.7))
+                color.palette = function(n) rainbow(n, start=0.0, end=0.7))
 {
-  aspectX = x[length(x)] - x[1]
-  aspectY = y[length(y)] - y[1]
+  aspectX = length(x)
+  aspectY = length(y)
   mn = min(z, na.rm=TRUE)
   mx = max(z, na.rm=TRUE)
-  if(type == 1)
-    c = color.pallete(dim(z)[1]*dim(z)[2])
-  else if(type == 2)
-  {
-    if(mx == mn) {
-      c = "green"
-    }
-    else {
-      c = (z - mn)/(mx - mn)
-      r = color.pallete(65536)
-      c = r[round(c * 65535) + 1]
-    }
+  if(mx == mn) {
+    c = "green"
   }
-  open3d(windowRect=c(10,35,810,835))
-  persp3d(x = x, y = y, z = z, aspect = c(aspectX * aspect[1], aspectY * aspect[2], aspectX * aspect[3]), xlab = labs[1], ylab = labs[2], zlab = labs[3], col=c)
-  title3d(main=title)
-
-  eps1 = 0.001 * abs(mx - mn)
-  if(!missing(grid) && !is.na(grid[1])) {
-    xGrid = seq(1, length(x), grid[1])
-    for(xInd in xGrid) {
-      lines3d(x[xInd], y, z[xInd,] + eps1, col = gridCol)
-      lines3d(x[xInd], y, z[xInd,] - eps1, col = gridCol)
-    }
+  else {
+    c = (z - mn)/(mx - mn)
+    r = color.palette(65536)
+    c = r[round(c * 65535) + 1]
   }
-  if(!missing(grid) && !is.na(grid[2])) {
-    yGrid = seq(1, length(y), grid[2])
-    for(yInd in yGrid) {
-      lines3d(x, y[yInd], z[,yInd] + eps1, col = gridCol)
-      lines3d(x, y[yInd], z[,yInd] - eps1, col = gridCol)
-    }
-  }
+  open3d(windowRect=c(10, 35, 810, 835))
+  persp3d(x = seq_along(x), y = seq_along(y), z = z, aspect = c(aspectX * aspect[1], aspectY * aspect[2], aspectX * aspect[3]), xlab = labs[1], ylab = labs[2], zlab = labs[3], col=c, axes = FALSE)
+  axis3d(edge = 'x', at = seq(1,length(x),5), labels = x[seq(1,length(x),5)])
+  axis3d(edge = 'y', at = seq(1,length(y),5), labels = y[seq(1,length(y),5)])
+  axis3d(edge = 'z')
+  title3d(main = title)
   rgl.bringtotop()
 }
 
@@ -69,6 +50,8 @@ plot3D = function(x, y, z,
 #' @param component "smooth", "period", "cohort", "residuals" or "original"
 #' @param labs Vector of labels for X, Y and Z axes.
 #' @param types Vector of plot types to plot. Possible types are \code{"2D"} and \code{"3D"}. Default value for the parameter is \code{c("3D", "2D")}.
+#' @param color.palette Character string \code{"default"} or \code{"special"} or a function accepting one argument and returning a color palette
+#' (for example \code{rainbow}).
 #' @param ... Other parameters. They are currently ignored.
 #' @examples
 #' \dontrun{
@@ -92,6 +75,7 @@ plot.sm2D = function(x,
                      component = c("all", "surface", "period", "cohort", "residuals", "original"),
                      labs = c("Age", "Time", NA),
                      types = c("3D", "2D"),
+                     color.palette = c("default", "special"),
                      ...)
 {
   if(!(component[1] %in% c("all", "surface", "period", "cohort", "residuals", "original")))
@@ -116,7 +100,7 @@ plot.sm2D = function(x,
   )
   if(is.null(data)) stop(paste0('Component "', component[1], '" cannot be extracted.'))
   labs[3] = ifelse(is.na(labs[3]), gsub("(^[[:alpha:]])", "\\U\\1", component[1], perl=TRUE), labs[3])
-  plot.matrix(x = data, labs = labs, types = types)
+  plot.matrix(x = data, labs = labs, types = types, color.palette = color.palette)
 }
 
 #' Presents matrix as 3D surface and/or a heatmap.
@@ -124,6 +108,8 @@ plot.sm2D = function(x,
 #' @param x Matrix to plot.
 #' @param labs Vector of lables for X, Y and Z axes.
 #' @param types Vector of plot types to plot. Possible types are \code{"2D"} and \code{"3D"}. Default value for the parameter is \code{c("3D", "2D")}.
+#' @param color.palette Character string \code{"default"} or \code{"special"} or a function accepting one argument and returning a color palette
+#' (for example \code{rainbow}).
 #' @param ... Other parameters. They are currently ignored.
 #' @examples
 #' \dontrun{
@@ -131,16 +117,48 @@ plot.sm2D = function(x,
 #' plot(matrix(rnorm(100),10,10))
 #' plot(matrix(1:100,10,10), c("Dimension 1", "Dimension 2", "Value"))
 #'
+#' library(demography)
+#' m = log(fr.mort$rate$female[1:30, 150:160])
+#' plot(m, type = "2D", color.palette = "default")
+#' plot(m, type = "3D", color.palette = "special")
+#' plot(m, color.palette = function(n) rainbow(n))
 #' }
 #' @author Alexander Dokumentov
 #' @export
 
-plot.matrix = function(x, labs = c("X", "Y", "Z"), types = c("2D", "3D"), ...)
+plot.matrix = function(x, labs = c("X", "Y", "Z"), types = c("2D", "3D"), color.palette = c("default", "special"), ...)
 {
-  if("3D" %in% types) plot3D(1:dim(x)[1], 1:dim(x)[2], x, labs = labs)
-  if("2D" %in% types) plot2D(1:dim(x)[1], 1:dim(x)[2], x, labs = labs)
+  if(max(x) > 0 && min(x) < 0) {
+    zlim = c(-max(abs(x)), max(abs(x)))
+    if(class(color.palette) == "function")
+      palette = color.palette
+    else
+      palette = my.colors
+  } else {
+    zlim = c(min(x), max(x))
+    palette = function(n) heat_hcl(n)
+    if(class(color.palette) == "character" && color.palette[1] == "special")
+      palette = function(n) rainbow(n, start=0.0, end=0.7)
+    else if(class(color.palette) == "function")
+      palette = color.palette
+  }
+  ages = rownames(x)
+  if(is.null(ages)) ages = 1:dim(x)[1]
+  years = colnames(x)
+  if(is.null(years)) years = 1:dim(x)[2]
+  if("3D" %in% types) plot3D(ages, years, x, labs = labs, color.palette = palette)
+  if("2D" %in% types) {
+    filled.contour(seq_along(ages), seq_along(years), x, zlim = zlim, color.palette = palette,
+      plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
+      plot.axes = {
+        axis(side = 1, at = seq(1,length(ages),5), labels = ages[seq(1,length(ages),5)]);
+        axis(side = 2, at = seq(1,length(years),5), labels = years[seq(1,length(years),5)])
+      }
+    )
+  }
 }
 
+# Modified version from R package colorspace
 my.colors =
   function(n, h = c(260, 0), c = 80, l = c(20, 90), power = .7,
           fixup = TRUE, gamma = NULL, ...)
@@ -158,17 +176,4 @@ my.colors =
                        C = c * abs(rval)^power[1], H = ifelse(rval > 0, h[1],
                                                               h[2])), fixup = fixup, ...)
   return(rval)
-}
-
-plot2D = function(ages, years, z, labs=c("X", "Y", "Z"))
-{
-  if(max(z)>0 && min(z)<0) {
-    filled.contour(ages, years, z, zlim = c(-max(abs(z)), max(abs(z))), color.palette = my.colors,
-                   plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
-                   plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
-  } else {
-    filled.contour(ages, years, z, color.palette = function(n) rainbow(n, start=0.0, end=0.7),
-                   plot.title = title(main = labs[3], xlab = labs[1], ylab = labs[2]),
-                   plot.axes = {axis(1, seq(ages[1],ages[length(ages)],10)); axis(2, years[seq(1,100,5)])})
-  }
 }

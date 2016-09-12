@@ -146,7 +146,7 @@ estYY = function(data,
   return(lambdas[which.min(cv)])
 }
 
-#' Smoothes demographic data using automatically estimated parameters and optionally
+#' Smooths demographic data using automatically estimated parameters and optionally
 #' taking into account period and cohort effects
 #'
 #' If period and cohort effects are taken into account (effects = TRUE) the method uses all

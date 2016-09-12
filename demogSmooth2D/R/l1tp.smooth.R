@@ -348,10 +348,14 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #   }); print("timeFit:"); print(timeFit)
 
   result = l1tp.unTargetVector(fit$coef, dim(data))
+  rownames(result) = rownames(data)
+  colnames(result) = colnames(data)
 
   if(effects) {
     yearsEffect = l1tp.unTargetYearsEffect(fit$coef, dim(data), yearsHelper = yearsHelper)
     cohortEffect = l1tp.unTargetCohortEffect(fit$coef, dim(data), cohHelper = cohHelper, yearsHelper = yearsHelper)
+    rownames(cohortEffect) = rownames(yearsEffect) = rownames(data)
+    colnames(cohortEffect) = colnames(yearsEffect) = colnames(data)
   }
   else {
     yearsEffect = NULL
