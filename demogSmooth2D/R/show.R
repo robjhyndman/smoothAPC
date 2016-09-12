@@ -109,7 +109,7 @@ plot.sm2D = function(x,
 #' @param labs Vector of lables for X, Y and Z axes.
 #' @param types Vector of plot types to plot. Possible types are \code{"2D"} and \code{"3D"}. Default value for the parameter is \code{c("3D", "2D")}.
 #' @param color.palette Character string \code{"default"} or \code{"special"} or a function accepting one argument and returning a color palette
-#' (for example \code{rainbow}).
+#' (for example \code{rainbow} from \code{grDevices} package).
 #' @param ... Other parameters. They are currently ignored.
 #' @examples
 #' \dontrun{
@@ -121,7 +121,7 @@ plot.sm2D = function(x,
 #' m = log(fr.mort$rate$female[1:30, 150:160])
 #' plot(m, type = "2D", color.palette = "default")
 #' plot(m, type = "3D", color.palette = "special")
-#' plot(m, color.palette = function(n) rainbow(n))
+#' plot(m, color.palette = rainbow)
 #' }
 #' @author Alexander Dokumentov
 #' @export
