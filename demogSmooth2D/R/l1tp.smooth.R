@@ -382,20 +382,21 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' @param effects Controls if the cohort and period effects are taking into account.
 #' @param affdDiagonals Diagonals to be used for cohort effects.
 #' @param affdYears Years to be used for period effects.
-#' @param control Control data passed directly to rq.fit.sfn method (quantreg package).
+#' @param control Control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function..
 #' @return List of three components: smooth surface, period effects, cohort effects.
 #' @examples
 #' \dontrun{
 #'
 #' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 150:160])
-#' sm = smooth2D(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
+#' m <- log(fr.mort$rate$female[1:30, 150:160])
+#' sm <- smooth2D(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
 #' plot(sm, "original")
 #' plot(sm)
 #'
 #' }
 #' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
+#' @seealso \code{\link{autoSmooth2D}}, \code{\link{signifAutoSmooth2D}}. 
 #' @export
 
-smooth2D = cmpfun(l1tp.smooth.demogdata.nc)
+smooth2D <- cmpfun(l1tp.smooth.demogdata.nc)

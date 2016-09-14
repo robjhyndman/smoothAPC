@@ -18,23 +18,23 @@ smooth2D.wrapper = function(...)
 #
 # @param data Demographic data presented as a matrix.
 # @param effects Controls if the cohort and period effects are taking into account.
-# @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects. The first diagonal is at the lowerest left corner of the data matrix.
+# @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects. The first diagonal is at the bottom left corner of the data matrix.
 # @param affdDiagonals Diagonals to be used for cohort effects.
 # @param affdYears Years to be used for period effects.
 # @param parameters Optional vector with some initial values to replace values in init parameter.
 # @param lower Lowest possible values for the optimization procedure.
 # @param upper Highest possible values for the optimization procedure.
 # @param init Initial values for the optimization procedure.
-# @param reltol Relative tolerance parameter to be supplied to optim function (standard optimiser for R).
+# @param reltol Relative tolerance parameter to be supplied to \code{\link[stats]{optim}} function.
 # @param trace Controls if tracing is on.
-# @param control The control data passed directly to rq.fit.sfn method (quantreg package).
+# @param control The control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function.
 # @return A vector of optimal smoothing parameters.
 # @examples
 # \dontrun{
 #
 # library(demography)
-# m = log(fr.mort$rate$female[1:30, 150:160])
-# parameters = estPar(m)
+# m <- log(fr.mort$rate$female[1:30, 150:160])
+# parameters <- estPar(m)
 #
 # }
 # @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
@@ -152,7 +152,6 @@ estYY = function(data,
 #' If period and cohort effects are taken into account (effects = TRUE) the method uses all
 #' available years and diagonals for estimation of the period and cohort effects.
 #'
-#' @seealso \code{\link{signifAutoSmooth2D}} might give slightly better performance.
 #' @param data Demographic data presented as a matrix.
 #' @param effects Controls if the cohort and period effects are taking into account.
 #' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
@@ -161,19 +160,19 @@ estYY = function(data,
 #' @param lower Lowest possible values for the optimization procedure.
 #' @param upper Highest possible values for the optimization procedure.
 #' @param init Initial values for the optimization procedure.
-#' @param reltol Relative tolerance parameter to be supplied to optim function (standard optimizer for R).
+#' @param reltol Relative tolerance parameter to be supplied to \code{\link[stats]{optim}} function.
 #' @param parameters Optional model parameters. If not provided, they are estimated.
 #' @param trace Controls if tracing is on.
-#' @param control The control data passed directly to rq.fit.sfn method (quantreg package).
+#' @param control The control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function.
 #' @return A list of four components: smooth surface, period effects, cohort effects and parameters
 #' used for smoothing (passed as a parameter or estimated).
 #' @examples
 #' \dontrun{
 #'
 #' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 150:160])
-#' Show(m)
-#' sm = autoSmooth2D(m)
+#' m <- log(fr.mort$rate$female[1:30, 150:160])
+#' plot(m)
+#' sm <- autoSmooth2D(m)
 #' plot(sm)
 #' plot(sm, "period")
 #' plot(sm, "cohort")
@@ -181,6 +180,7 @@ estYY = function(data,
 #' }
 #' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
+#' @seealso \code{\link{smooth2D}} and \code{\link{signifAutoSmooth2D}}. The latter might give slightly better performance.  
 #' @export
 
 autoSmooth2D = function(data,
@@ -269,18 +269,18 @@ getAffected = function(resid, p.value = 0.05)
 #' @param lower Lowest possible values for the optimization procedure.
 #' @param upper Highest possible values for the optimization procedure.
 #' @param init Initial values for the optimization procedure.
-#' @param reltol Relative tolerance parameter to be supplied to optim function (standard optimizer for R).
+#' @param reltol Relative tolerance parameter to be supplied to \code{\link[stats]{optim}} function.
 #' @param trace Controls if tracing is on.
-#' @param control The control data passed directly to rq.fit.sfn method (quantreg package).
+#' @param control The control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function.
 #' @return A list of six components: smooth surface, period effects, cohort effects, parameters
 #' used for smoothing, diagonals used for cohort effects and years used for period effects.
 #' @examples
 #' \dontrun{
 #'
 #' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 120:139])
-#' Show(m)
-#' sm = signifAutoSmooth2D(m)
+#' m <- log(fr.mort$rate$female[1:30, 120:139])
+#' plot(m)
+#' sm <- signifAutoSmooth2D(m)
 #' plot(sm)
 #' plot(sm, "surface")
 #' plot(sm, "period")
@@ -289,6 +289,7 @@ getAffected = function(resid, p.value = 0.05)
 #' }
 #' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
+#' @seealso \code{\link{autoSmooth2D}}, \code{\link{smooth2D}}. 
 #' @export
 
 signifAutoSmooth2D = function(data,

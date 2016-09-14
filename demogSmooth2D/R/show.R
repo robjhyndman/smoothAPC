@@ -57,8 +57,8 @@ plot3D = function(x, y, z,
 #' \dontrun{
 #'
 #' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 150:160])
-#' sm = autoDemogSmooth(m)
+#' m <- log(fr.mort$rate$female[1:30, 150:160])
+#' sm <- autoDemogSmooth(m)
 #'
 #' plot(sm)
 #' plot(sm, "surface")
@@ -106,7 +106,7 @@ plot.sm2D = function(x,
 #' Presents matrix as 3D surface and/or a heatmap.
 #'
 #' @param x Matrix to plot.
-#' @param labs Vector of lables for X, Y and Z axes.
+#' @param labs Vector of labels for X, Y and Z axes.
 #' @param types Vector of plot types to plot. Possible types are \code{"2D"} and \code{"3D"}. Default value for the parameter is \code{c("3D", "2D")}.
 #' @param color.palette Character string \code{"default"} or \code{"special"} or a function accepting one argument and returning a color palette
 #' (for example \code{rainbow} from \code{grDevices} package).
@@ -118,7 +118,7 @@ plot.sm2D = function(x,
 #' plot(matrix(1:100,10,10), c("Dimension 1", "Dimension 2", "Value"))
 #'
 #' library(demography)
-#' m = log(fr.mort$rate$female[1:30, 150:160])
+#' m <- log(fr.mort$rate$female[1:30, 150:160])
 #' plot(m, type = "2D", color.palette = "default")
 #' plot(m, type = "3D", color.palette = "special")
 #' plot(m, color.palette = rainbow)
