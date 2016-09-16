@@ -44,7 +44,7 @@ plot3D = function(x, y, z,
   rgl.bringtotop()
 }
 
-#' Presents demographic data using 3D surface and/or a heatmap.
+#' Presents demographic data using 3D surface and/or a heatmap
 #'
 #' @param x Result of smoothing (object of class \code{sm2D}).
 #' @param component "smooth", "period", "cohort", "residuals" or "original"
@@ -58,7 +58,7 @@ plot3D = function(x, y, z,
 #'
 #' library(demography)
 #' m <- log(fr.mort$rate$female[1:30, 150:160])
-#' sm <- autoDemogSmooth(m)
+#' sm <- autoSmoothAPC(m)
 #'
 #' plot(sm)
 #' plot(sm, "surface")
@@ -103,7 +103,7 @@ plot.sm2D = function(x,
   plot.matrix(x = data, labs = labs, types = types, color.palette = color.palette)
 }
 
-#' Presents matrix as 3D surface and/or a heatmap.
+#' Presents matrix as 3D surface and/or a heatmap
 #'
 #' @param x Matrix to plot.
 #' @param labs Vector of labels for X, Y and Z axes.

@@ -1,4 +1,4 @@
 library(testthat)
-library(smooth2D)
+library(smoothAPC)
 
-test_check("smooth2D")
+test_check("smoothAPC")

@@ -389,14 +389,14 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #'
 #' library(demography)
 #' m <- log(fr.mort$rate$female[1:30, 150:160])
-#' sm <- smooth2D(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
+#' sm <- smoothAPC(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
 #' plot(sm, "original")
 #' plot(sm)
 #'
 #' }
 #' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
-#' @seealso \code{\link{autoSmooth2D}}, \code{\link{signifAutoSmooth2D}}. 
+#' @seealso \code{\link{autoSmoothAPC}}, \code{\link{signifAutoSmoothAPC}}.
 #' @export
 
-smooth2D <- cmpfun(l1tp.smooth.demogdata.nc)
+smoothAPC <- cmpfun(l1tp.smooth.demogdata.nc)

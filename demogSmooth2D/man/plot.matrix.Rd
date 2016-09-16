@@ -2,7 +2,7 @@
 % Please edit documentation in R/show.R
 \name{plot.matrix}
 \alias{plot.matrix}
-\title{Presents matrix as 3D surface and/or a heatmap.}
+\title{Presents matrix as 3D surface and/or a heatmap}
 \usage{
 \method{plot}{matrix}(x, labs = c("X", "Y", "Z"), types = c("2D", "3D"),
   color.palette = c("default", "special"), ...)
@@ -20,7 +20,7 @@
 \item{...}{Other parameters. They are currently ignored.}
 }
 \description{
-Presents matrix as 3D surface and/or a heatmap.
+Presents matrix as 3D surface and/or a heatmap
 }
 \examples{
 \dontrun{

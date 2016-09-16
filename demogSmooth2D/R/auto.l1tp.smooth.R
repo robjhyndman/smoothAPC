@@ -1,6 +1,6 @@
-smooth2D.wrapper = function(...)
+smoothAPC.wrapper = function(...)
 {
-  tryCatch((result = smooth2D(...)),
+  tryCatch((result = smoothAPC(...)),
            error = function(e) {
              cat("\n\nERROR\n\n")
              print(e)
@@ -82,7 +82,7 @@ estPar = function(data,
     lambdaCohortEffect <- x[6]
     thetaCohortEffect <- x[7]
     # time = system.time({
-    cv <- smoothCv(smooth2D.wrapper, data = data,
+    cv <- smoothCv(smoothAPC.wrapper, data = data,
                    lambda = 1, lambdaaa = lambdaaa, lambdayy = lambdayy, lambdaay = lambdaay,
                    lambdaYearsEffect = lambdaYearsEffect, thetaYearsEffect = thetaYearsEffect,
                    lambdaCohortEffect = lambdaCohortEffect, thetaCohortEffect = thetaCohortEffect,
@@ -119,7 +119,7 @@ estAA = function(data,
   cv = 0
   for(i in seq_along(lambdas)) {
     if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
-    cv[i] <- smoothCv(smooth2D.wrapper, data = data,
+    cv[i] <- smoothCv(smoothAPC.wrapper, data = data,
                       lambda = 1, lambdaaa = lambdas[i], lambdayy = 0, lambdaay = 0,
                       effects = FALSE, control = control)$MAE
     if(trace) {print(paste("lambdaAA:", lambdas[i])); print(cv[i])}
@@ -138,7 +138,7 @@ estYY = function(data,
   cv = 0
   for(i in seq_along(lambdas)) {
     if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
-    cv[i] <- smoothCv(smooth2D.wrapper, data = data,
+    cv[i] <- smoothCv(smoothAPC.wrapper, data = data,
                       lambda = 1, lambdaaa = 0, lambdayy = lambdas[i], lambdaay = 0,
                       effects = FALSE, control = control)$MAE
     if(trace) {print(paste("lambdaYY:", lambdas[i])); print(cv[i])}
@@ -172,7 +172,7 @@ estYY = function(data,
 #' library(demography)
 #' m <- log(fr.mort$rate$female[1:30, 150:160])
 #' plot(m)
-#' sm <- autoSmooth2D(m)
+#' sm <- autoSmoothAPC(m)
 #' plot(sm)
 #' plot(sm, "period")
 #' plot(sm, "cohort")
@@ -180,10 +180,10 @@ estYY = function(data,
 #' }
 #' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
-#' @seealso \code{\link{smooth2D}} and \code{\link{signifAutoSmooth2D}}. The latter might give slightly better performance.  
+#' @seealso \code{\link{smoothAPC}} and \code{\link{signifAutoSmoothAPC}}. The latter might give slightly better performance.
 #' @export
 
-autoSmooth2D = function(data,
+autoSmoothAPC = function(data,
                            effects = TRUE,
                            cornerLength = 7,
                            affdDiagonals = NULL,
@@ -209,7 +209,7 @@ autoSmooth2D = function(data,
                         trace = trace,
                         control = control)$par
   }
-  result = smooth2D(data,
+  result = smoothAPC(data,
                        lambda = 1,
                        lambdaaa = parameters[1],
                        lambdayy = parameters[2],
@@ -256,11 +256,11 @@ getAffected = function(resid, p.value = 0.05)
 
 
 #' Smooths demographic data using automatically estimated parameters and
-#' taking into account only significant period and cohort effects.
+#' taking into account only significant period and cohort effects
 #'
 #' It is a heuristic procedure which tries to figure out positions of
 #' period and cohort effects in the data. It also uses a few steps to estimate
-#' model's parameters. The procedure is supposed to outperform \code{\link{autoSmooth2D}} slightly.
+#' model's parameters. The procedure is supposed to outperform \code{\link{autoSmoothAPC}} slightly.
 #'
 #' @param data Demographic data presented as a matrix.
 #' @param p.value P-value used to test the period and the cohort effects for significance.
@@ -280,7 +280,7 @@ getAffected = function(resid, p.value = 0.05)
 #' library(demography)
 #' m <- log(fr.mort$rate$female[1:30, 120:139])
 #' plot(m)
-#' sm <- signifAutoSmooth2D(m)
+#' sm <- signifAutoSmoothAPC(m)
 #' plot(sm)
 #' plot(sm, "surface")
 #' plot(sm, "period")
@@ -289,10 +289,10 @@ getAffected = function(resid, p.value = 0.05)
 #' }
 #' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 #' @author Alexander Dokumentov
-#' @seealso \code{\link{autoSmooth2D}}, \code{\link{smooth2D}}. 
+#' @seealso \code{\link{autoSmoothAPC}}, \code{\link{smoothAPC}}.
 #' @export
 
-signifAutoSmooth2D = function(data,
+signifAutoSmoothAPC = function(data,
                               p.value = 0.05,
                               cornerLength = 7,
                               lower = c(0.01, 0.01, 0.01, 1.0, 0.001, 1.0, 0.001),
@@ -308,7 +308,7 @@ signifAutoSmooth2D = function(data,
                    step = abs(upper[2]-lower[2])/20,
                    trace = trace,
                    control = control)
-  resid = smoothCv(smooth2D.wrapper,
+  resid = smoothCv(smoothAPC.wrapper,
                    data = data,
                    lambda = 1,
                    lambdaaa = 0,
@@ -322,7 +322,7 @@ signifAutoSmooth2D = function(data,
                            step = abs(upper[4]-lower[4])/20,
                            trace = trace,
                            control = control)
-  result1 = smooth2D(resid,
+  result1 = smoothAPC(resid,
                        lambda = 1,
                        lambdaaa = lambdaYearsEffect,
                        lambdayy = 0,
@@ -346,7 +346,7 @@ signifAutoSmooth2D = function(data,
                         reltol = reltol,
                         trace = trace,
                         control = control)$par
-  resid2 = smoothCv(smooth2D.wrapper,
+  resid2 = smoothCv(smoothAPC.wrapper,
                    data = data,
                    lambda = 1,
                    lambdaaa = parametersNA[1],
@@ -369,7 +369,7 @@ signifAutoSmooth2D = function(data,
                       reltol = reltol,
                       trace = trace,
                       control = control)$par
-  result = smooth2D(data,
+  result = smoothAPC(data,
                        lambda = 1,
                        lambdaaa = parameters[1],
                        lambdayy = parameters[2],
@@ -399,7 +399,7 @@ signifAutoSmooth2D = function(data,
                       reltol = reltol,
                       trace = trace,
                       control = control)$par
-  result = smooth2D(data,
+  result = smoothAPC(data,
                        lambda = 1,
                        lambdaaa = parameters[1],
                        lambdayy = parameters[2],

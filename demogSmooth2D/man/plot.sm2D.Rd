@@ -2,7 +2,7 @@
 % Please edit documentation in R/show.R
 \name{plot.sm2D}
 \alias{plot.sm2D}
-\title{Presents demographic data using 3D surface and/or a heatmap.}
+\title{Presents demographic data using 3D surface and/or a heatmap}
 \usage{
 \method{plot}{sm2D}(x, component = c("all", "surface", "period", "cohort",
   "residuals", "original"), labs = c("Age", "Time", NA), types = c("3D",
@@ -23,14 +23,14 @@
 \item{...}{Other parameters. They are currently ignored.}
 }
 \description{
-Presents demographic data using 3D surface and/or a heatmap.
+Presents demographic data using 3D surface and/or a heatmap
 }
 \examples{
 \dontrun{
 
 library(demography)
 m <- log(fr.mort$rate$female[1:30, 150:160])
-sm <- autoDemogSmooth(m)
+sm <- autoSmoothAPC(m)
 
 plot(sm)
 plot(sm, "surface")

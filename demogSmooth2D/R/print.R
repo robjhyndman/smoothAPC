@@ -1,4 +1,4 @@
-# Prints the result of smoothing (object of class \code{sm2D}).
+# Prints the result of smoothing (object of class \code{sm2D})
 #
 # @param x Result of smoothing (object of class \code{sm2D}).
 # @param ... Other parameters. They are currently ignored.

@@ -18,22 +18,22 @@ diag(coh) = 1000
 per = matrix(0, 10,10)
 per[,5] = 1000
 
-test_that("Testing autoSmooth2D on linear data with noise, effects = FALSE", {
-  sm = autoSmooth2D(m + err, effects = FALSE)
+test_that("Testing autoSmoothAPC on linear data with noise, effects = FALSE", {
+  sm = autoSmoothAPC(m + err, effects = FALSE)
   expect_equivalent(sm$result, m)
   expect_null(sm$yearsEffect)
   expect_null(sm$cohortEffect)
 })
 
-test_that("Testing autoSmooth2D on linear data with noise, effects = TRUE", {
-  sm = autoSmooth2D(m + err, effects = TRUE)
+test_that("Testing autoSmoothAPC on linear data with noise, effects = TRUE", {
+  sm = autoSmoothAPC(m + err, effects = TRUE)
   expect_equivalent(sm$result, m)
   expect_equivalent(sm$yearsEffect, zer)
   expect_equivalent(sm$cohortEffect, zer)
 })
 
-test_that("Testing autoSmooth2D on linear data with noise, preiod and cohort effects, effects = TRUE", {
-  sm = autoSmooth2D(m + coh + per + err, effects = TRUE)
+test_that("Testing autoSmoothAPC on linear data with noise, preiod and cohort effects, effects = TRUE", {
+  sm = autoSmoothAPC(m + coh + per + err, effects = TRUE)
   all.equal(sm$result, m, tolerance = 1e-7, check.attributes = F)
   all.equal(sm$yearsEffect, per, tolerance = 1e-7, check.attributes = F)
   all.equal(sm$cohortEffect, coh, tolerance = 1e-7, check.attributes = F)

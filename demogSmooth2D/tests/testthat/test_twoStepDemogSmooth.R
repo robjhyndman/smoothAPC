@@ -18,8 +18,8 @@ diag(coh) = 1000
 per = matrix(0, 10,10)
 per[,5] = 1000
 
-test_that("Testing signifAutoSmooth2D on linear data with noise", {
-  sm = signifAutoSmooth2D(data = m + err)
+test_that("Testing signifAutoSmoothAPC on linear data with noise", {
+  sm = signifAutoSmoothAPC(data = m + err)
   expect_equivalent(sm$result, m)
   expect_equivalent(sm$yearsEffect, zer)
   expect_equivalent(sm$cohortEffect, zer)
@@ -27,8 +27,8 @@ test_that("Testing signifAutoSmooth2D on linear data with noise", {
   expect_equal(length(sm$affdYears), 0)
 })
 
-test_that("Testing signifAutoSmooth2D on linear data with noise, period and cohort effects", {
-  sm = signifAutoSmooth2D(data = m + coh + per + err)
+test_that("Testing signifAutoSmoothAPC on linear data with noise, period and cohort effects", {
+  sm = signifAutoSmoothAPC(data = m + coh + per + err)
   expect_equivalent(sm$result, m)
   expect_equivalent(sm$yearsEffect, per)
   expect_equivalent(sm$cohortEffect, coh)
