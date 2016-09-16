@@ -1,6 +1,6 @@
-# Prints the result of smoothing (object of class \code{sm2D})
+# Prints the result of smoothing (object of class \code{smAPC})
 #
-# @param x Result of smoothing (object of class \code{sm2D}).
+# @param x Result of smoothing (object of class \code{smAPC}).
 # @param ... Other parameters. They are currently ignored.
 # @examples
 # \dontrun{
@@ -15,7 +15,7 @@
 
 #' @export
 
-print.sm2D = function(x, ...)
+print.smAPC = function(x, ...)
 {
   translate = list(
     cohortEffect = "Extracted cohort effects",
@@ -24,7 +24,7 @@ print.sm2D = function(x, ...)
     result = "Smooth surface",
     yearsEffect = "Extracted period effects"
   )
-  cat("Object of class sm2D with components:")
+  cat("Object of class smAPC with components:")
   for(component in sort(ls(x))) {
     cat("\n\t"); cat(translate[[component]])
   }

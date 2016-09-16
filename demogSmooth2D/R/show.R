@@ -46,7 +46,7 @@ plot3D = function(x, y, z,
 
 #' Presents demographic data using 3D surface and/or a heatmap
 #'
-#' @param x Result of smoothing (object of class \code{sm2D}).
+#' @param x Result of smoothing (object of class \code{smAPC}).
 #' @param component "smooth", "period", "cohort", "residuals" or "original"
 #' @param labs Vector of labels for X, Y and Z axes.
 #' @param types Vector of plot types to plot. Possible types are \code{"2D"} and \code{"3D"}. Default value for the parameter is \code{c("3D", "2D")}.
@@ -71,7 +71,7 @@ plot3D = function(x, y, z,
 #' @author Alexander Dokumentov
 #' @export
 
-plot.sm2D = function(x,
+plot.smAPC = function(x,
                      component = c("all", "surface", "period", "cohort", "residuals", "original"),
                      labs = c("Age", "Time", NA),
                      types = c("3D", "2D"),

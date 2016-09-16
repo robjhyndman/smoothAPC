@@ -363,7 +363,7 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
   }
 
   result = list(result = result, yearsEffect = yearsEffect, cohortEffect = cohortEffect, original = data)
-  class(result) = "sm2D"
+  class(result) = "smAPC"
   return(result)
 }
 
