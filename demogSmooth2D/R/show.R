@@ -44,14 +44,14 @@ plot3D = function(x, y, z,
   rgl.bringtotop()
 }
 
-#' Presents demographic data using 3D surface and/or a heatmap
+#' Presents demographic data as a heatmap
 #'
 #' @param x Result of smoothing (object of class \code{smAPC}).
-#' @param component "smooth", "period", "cohort", "residuals" or "original"
-#' @param labs Vector of labels for X, Y and Z axes.
-#' @param types Vector of plot types to plot. Possible types are \code{"2D"} and \code{"3D"}. Default value for the parameter is \code{c("3D", "2D")}.
+#' @param component "smooth", "period", "cohort", "residuals" or "original".
+#' @param labs Vector of labels for X and Y axes.
 #' @param color.palette Character string \code{"default"} or \code{"special"} or a function accepting one argument and returning a color palette
-#' (for example \code{rainbow}).
+#' (for example \code{\link[grDevices]{rainbow}}).
+#' @param main Title for the plot.
 #' @param ... Other parameters. They are currently ignored.
 #' @examples
 #' \dontrun{
@@ -65,13 +65,67 @@ plot3D = function(x, y, z,
 #' plot(sm, "cohort")
 #' plot(sm, "period")
 #' plot(sm, "residuals")
-#' plot(sm, "original")
+#' plot(sm, "original", main = "Original data")
 #'
 #' }
 #' @author Alexander Dokumentov
 #' @export
 
 plot.smAPC = function(x,
+                      component = c("all", "surface", "period", "cohort", "residuals", "original"),
+                      labs = c("Age", "Time"),
+                      color.palette = c("default", "special"),
+                      main = "",
+                      ...)
+{
+  plot_smAPC(x = x, component = component, labs = c(labs, main), types = "2D", color.palette = color.palette, ...)
+}
+
+#' Presents demographic data as a 3D surface
+#'
+#' @param x Result of smoothing (object of class \code{smAPC}).
+#' @param component "smooth", "period", "cohort", "residuals" or "original".
+#' @param labs Vector of labels for X, Y and Z axes.
+#' @param color.palette Character string \code{"default"} or \code{"special"} or a function accepting one argument and returning a color palette
+#' (for example \code{\link[grDevices]{rainbow}}).
+#' @param ... Other parameters. They are currently ignored.
+#' @examples
+#' \dontrun{
+#'
+#' library(demography)
+#' m <- log(fr.mort$rate$female[1:30, 150:160])
+#' sm <- autoSmoothAPC(m)
+#'
+#' plot3d(sm)
+#' plot3d(sm, "surface", color.palette = "special")
+#' plot3d(sm, "cohort")
+#' plot3d(sm, "period")
+#' plot3d(sm, "residuals")
+#' plot3d(sm, "original", color.palette = rainbow)
+#'
+#' }
+#' @author Alexander Dokumentov
+#' @export
+
+plot3d.smAPC = function(x,
+                      component = c("all", "surface", "period", "cohort", "residuals", "original"),
+                      labs = c("Age", "Time", NA),
+                      color.palette = c("default", "special"),
+                      ...)
+{
+  plot_smAPC(x = x, component = component, labs = labs, types = "3D", color.palette = color.palette, ...)
+}
+
+#' Presents data as a 3D surface
+#'
+#' @param x Data to plot.
+#' @param ... Other parameters.
+#'
+#' @export
+
+plot3d = function(x, ...) UseMethod("plot3d")
+
+plot_smAPC = function(x,
                      component = c("all", "surface", "period", "cohort", "residuals", "original"),
                      labs = c("Age", "Time", NA),
                      types = c("3D", "2D"),
@@ -100,33 +154,65 @@ plot.smAPC = function(x,
   )
   if(is.null(data)) stop(paste0('Component "', component[1], '" cannot be extracted.'))
   labs[3] = ifelse(is.na(labs[3]), gsub("(^[[:alpha:]])", "\\U\\1", component[1], perl=TRUE), labs[3])
-  plot.matrix(x = data, labs = labs, types = types, color.palette = color.palette)
+  plot_matrix(x = data, labs = labs, types = types, color.palette = color.palette)
 }
 
-#' Presents matrix as 3D surface and/or a heatmap
+#' Presents matrix as a heatmap
 #'
 #' @param x Matrix to plot.
-#' @param labs Vector of labels for X, Y and Z axes.
-#' @param types Vector of plot types to plot. Possible types are \code{"2D"} and \code{"3D"}. Default value for the parameter is \code{c("3D", "2D")}.
+#' @param labs Vector of labels for X and Y axes.
 #' @param color.palette Character string \code{"default"} or \code{"special"} or a function accepting one argument and returning a color palette
-#' (for example \code{rainbow} from \code{grDevices} package).
+#' (for example \code{\link[grDevices]{rainbow}}).
+#' @param main Title for the plot.
 #' @param ... Other parameters. They are currently ignored.
 #' @examples
 #' \dontrun{
 #'
-#' plot(matrix(rnorm(100),10,10))
-#' plot(matrix(1:100,10,10), c("Dimension 1", "Dimension 2", "Value"))
+#' plot(matrix(rnorm(100),10,10), main = "Noise")
+#' plot(matrix(1:100,10,10), c("Dimension 1", "Dimension 2"), main = "Value")
 #'
 #' library(demography)
 #' m <- log(fr.mort$rate$female[1:30, 150:160])
-#' plot(m, type = "2D", color.palette = "default")
-#' plot(m, type = "3D", color.palette = "special")
+#' plot(m)
+#' plot(m, color.palette = "special")
 #' plot(m, color.palette = rainbow)
 #' }
 #' @author Alexander Dokumentov
 #' @export
 
-plot.matrix = function(x, labs = c("X", "Y", "Z"), types = c("2D", "3D"), color.palette = c("default", "special"), ...)
+plot.matrix = function(x, labs = c("X", "Y"), color.palette = c("default", "special"), main = "", ...)
+{
+  plot_matrix(x = x, labs = c(labs, main), types = "2D", color.palette = color.palette, ...)
+}
+
+#' Presents matrix as a 3D surface
+#'
+#' @param x Matrix to plot.
+#' @param labs Vector of labels for X, Y and Z axes.
+#' @param color.palette Character string \code{"default"} or \code{"special"} or a function accepting one argument and returning a color palette
+#' (for example \code{\link[grDevices]{rainbow}}).
+#' @param ... Other parameters. They are currently ignored.
+#' @examples
+#' \dontrun{
+#'
+#' plot3d(matrix(rnorm(100),10,10))
+#' plot3d(matrix(1:100,10,10), c("Dimension 1", "Dimension 2", "Value"))
+#'
+#' library(demography)
+#' m <- log(fr.mort$rate$female[1:30, 150:160])
+#' plot3d(m)
+#' plot3d(m, color.palette = "special")
+#' plot3d(m, color.palette = rainbow)
+#' }
+#' @author Alexander Dokumentov
+#' @export
+
+plot3d.matrix = function(x, labs = c("X", "Y", "Z"), color.palette = c("default", "special"), ...)
+{
+  plot_matrix(x = x, labs = labs, types = "3D", color.palette = color.palette, ...)
+}
+
+plot_matrix = function(x, labs = c("X", "Y", "Z"), types = c("2D", "3D"), color.palette = c("default", "special"), ...)
 {
   if(max(x) > 0 && min(x) < 0) {
     zlim = c(-max(abs(x)), max(abs(x)))

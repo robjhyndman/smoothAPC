@@ -2,8 +2,11 @@
 
 S3method(plot,matrix)
 S3method(plot,smAPC)
+S3method(plot3d,matrix)
+S3method(plot3d,smAPC)
 S3method(print,smAPC)
 export(autoSmoothAPC)
+export(plot3d)
 export(signifAutoSmoothAPC)
 export(smoothAPC)
 importFrom(SparseM,as.matrix.csr)
