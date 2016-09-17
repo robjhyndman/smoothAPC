@@ -13,7 +13,7 @@ cvPoints.nc = function(k, mini, maxi, maxj)
   return(result)
 }
 
-cvPoints = cmpfun(cvPoints.nc)
+cvPoints = compiler::cmpfun(cvPoints.nc)
 
 partialSSE.nc = function(data1, data2, points)
 {
@@ -24,7 +24,7 @@ partialSSE.nc = function(data1, data2, points)
   return(SSE)
 }
 
-partialSSE = cmpfun(partialSSE.nc)
+partialSSE = compiler::cmpfun(partialSSE.nc)
 
 partialSAE.nc = function(data1, data2, points)
 {
@@ -35,7 +35,7 @@ partialSAE.nc = function(data1, data2, points)
   return(SAE)
 }
 
-partialSAE = cmpfun(partialSAE.nc)
+partialSAE = compiler::cmpfun(partialSAE.nc)
 
 updateResiduals = function(res, data1, data2, points)
 {
@@ -73,4 +73,4 @@ smoothCv.nc = function(smoothFun, data, upToAgeInd = dim(data)[1], fromAgeInd = 
   return(list(MSE = SSE/l, MAE = SAE/l, cvResiduals = r))
 }
 
-smoothCv = cmpfun(smoothCv.nc)
+smoothCv = compiler::cmpfun(smoothCv.nc)

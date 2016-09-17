@@ -1,10 +1,9 @@
-#' @importFrom compiler cmpfun
 #' @importFrom quantreg rq.fit.sfn
 #' @importFrom stats t.test
 #' @importFrom SparseM as.matrix.csr
 
 
-append = cmpfun(function(env, val, i, j) {
+append = compiler::cmpfun(function(env, val, i, j) {
   b <- env$l + 1L
   env$l <- env$l + length(val)
   env$ra[b:env$l] <- val
@@ -12,7 +11,7 @@ append = cmpfun(function(env, val, i, j) {
   env$ja[b:env$l] <- j
 })
 
-initialize = cmpfun(function(env, nRows, nCols, len) {
+initialize = compiler::cmpfun(function(env, nRows, nCols, len) {
   env$d <- c(nRows, nCols)
   env$ra <- numeric(len)
   env$ia <- integer(len)
@@ -78,7 +77,7 @@ l1tp.unTargetCohortEffect = function(y, dims, cohHelper, yearsHelper)
   return(t)
 }
 
-P = cmpfun(function(ageInd, yearInd, nAges, nYears)
+P = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears)
 {
   return(ageInd + (yearInd - 1L) * nAges)
 })
@@ -88,7 +87,7 @@ InvP = function(p, nAges, nYears)
   return(c((p-1L)%%nAges+1L, (p-1L)%/%nAges+1L))
 }
 
-getV = cmpfun(function(ageInd, yearInd, nAges, nYears, cm, row, cohHelper, yearsHelper, effects)
+getV = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears, cm, row, cohHelper, yearsHelper, effects)
 {
   p = P(ageInd, yearInd, nAges, nYears)
   append(cm, c(1), c(row), c(p))
@@ -100,25 +99,25 @@ getV = cmpfun(function(ageInd, yearInd, nAges, nYears, cm, row, cohHelper, years
   }
 })
 
-getVaa = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
+getVaa = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
 {
   append(cm, c(-2*lambda, lambda, lambda), c(row, row, row),
     c(P(ageInd, yearInd, nAges, nYears), P(ageInd - 1L, yearInd, nAges, nYears), P(ageInd + 1L, yearInd, nAges, nYears)))
 })
 
-getVyy = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
+getVyy = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
 {
   append(cm, c(-2*lambda, lambda, lambda), c(row, row, row),
     c(P(ageInd, yearInd, nAges, nYears), P(ageInd, yearInd - 1L, nAges, nYears), P(ageInd, yearInd + 1L, nAges, nYears)))
 })
 
-getVay = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
+getVay = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row)
 {
   append(cm, c(lambda, -lambda, -lambda, lambda), c(row, row, row, row),
     c(P(ageInd, yearInd, nAges, nYears), P(ageInd, yearInd + 1L, nAges, nYears), P(ageInd + 1L, yearInd, nAges, nYears), P(ageInd + 1L, yearInd + 1L, nAges, nYears)))
 })
 
-getVYearsaa = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row, yearsHelper)
+getVYearsaa = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row, yearsHelper)
 {
   offset = nAges*nYears
   append(cm, c(-2 * lambda, lambda, lambda), c(row, row, row),
@@ -126,13 +125,13 @@ getVYearsaa = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row, y
 })
 
 #It is to avoid singularity of the design matrix
-getVYearsDist = cmpfun(function(ageInd, yearInd, nAges, nYears, theta, cm, row, yearsHelper)
+getVYearsDist = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears, theta, cm, row, yearsHelper)
 {
   offset = nAges*nYears
   append(cm, theta, row, offset + yearsHelper$p[ageInd, yearInd])
 })
 
-getVCohortay = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row, cohHelper, yearsHelper)
+getVCohortay = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row, cohHelper, yearsHelper)
 {
   offset = nAges*nYears + yearsHelper$l
   append(cm, c(-2 * lambda, lambda, lambda), c(row, row, row),
@@ -140,13 +139,13 @@ getVCohortay = cmpfun(function(ageInd, yearInd, nAges, nYears, lambda, cm, row, 
 })
 
 #It is to avoid singularity of the design matrix
-getVCohortDist = cmpfun(function(ageInd, yearInd, nAges, nYears, theta, cm, row, cohHelper, yearsHelper)
+getVCohortDist = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears, theta, cm, row, cohHelper, yearsHelper)
 {
   offset = nAges*nYears + yearsHelper$l
   append(cm, theta, row, offset + cohHelper$p[ageInd, yearInd])
 })
 
-PAA = cmpfun(function(ageInd, yearInd, nAges, nYears)
+PAA = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears)
 {
   if(ageInd <= 1L || ageInd >= nAges)
   {
@@ -157,7 +156,7 @@ PAA = cmpfun(function(ageInd, yearInd, nAges, nYears)
   }
 })
 
-PYY = cmpfun(function(ageInd, yearInd, nAges, nYears)
+PYY = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears)
 {
   if(yearInd <= 1L || yearInd >= nYears)
   {
@@ -168,7 +167,7 @@ PYY = cmpfun(function(ageInd, yearInd, nAges, nYears)
   }
 })
 
-PAY = cmpfun(function(ageInd, yearInd, nAges, nYears)
+PAY = compiler::cmpfun(function(ageInd, yearInd, nAges, nYears)
 {
   if(yearInd < 1L || yearInd >= nYears || ageInd < 1L || ageInd >= nAges)
   {
@@ -179,7 +178,7 @@ PAY = cmpfun(function(ageInd, yearInd, nAges, nYears)
   }
 })
 
-prepareCohHelper = cmpfun(function(cohHelper, dims, cornerLength, affdDiagonals)
+prepareCohHelper = compiler::cmpfun(function(cohHelper, dims, cornerLength, affdDiagonals)
 {
   nAges = dims[1]
   nYears = dims[2]
@@ -205,7 +204,7 @@ prepareCohHelper = cmpfun(function(cohHelper, dims, cornerLength, affdDiagonals)
   cohHelper$l <- c
 })
 
-prepareYearsHelper = cmpfun(function(yearsHelper, dims, affdYears)
+prepareYearsHelper = compiler::cmpfun(function(yearsHelper, dims, affdYears)
 {
   nAges = dims[1]
   nYears = dims[2]
@@ -228,7 +227,7 @@ prepareYearsHelper = cmpfun(function(yearsHelper, dims, affdYears)
   yearsHelper$l <- c
 })
 
-l1tp.getDesignMatrix = cmpfun(function(dims, lambda, lambdaaa, lambdayy, lambdaay, lambdaYearsEffect, thetaYearsEffect, lambdaCohortEffect, thetaCohortEffect, cornerLength, cohHelper, yearsHelper, effects)
+l1tp.getDesignMatrix = compiler::cmpfun(function(dims, lambda, lambdaaa, lambdayy, lambdaay, lambdaYearsEffect, thetaYearsEffect, lambdaCohortEffect, thetaCohortEffect, cornerLength, cohHelper, yearsHelper, effects)
 {
   nAges = dims[1]
   nYears = dims[2]
@@ -399,4 +398,4 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' @seealso \code{\link{autoSmoothAPC}}, \code{\link{signifAutoSmoothAPC}}.
 #' @export
 
-smoothAPC <- cmpfun(l1tp.smooth.demogdata.nc)
+smoothAPC <- compiler::cmpfun(l1tp.smooth.demogdata.nc)
