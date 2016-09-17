@@ -15,11 +15,11 @@ autoSmoothAPC(data, effects = TRUE, cornerLength = 7,
 \arguments{
 \item{data}{Demographic data presented as a matrix.}
 
-\item{effects}{Controls if the cohort and period effects are taking into account.}
+\item{effects}{Controls if the cohort and period effects are taken into account.}
 
 \item{cornerLength}{Sets the smallest length of a diagonal to be considered for cohort effects.}
 
-\item{affdDiagonals}{Diagonals to be used for cohort effects. The first diagonal is at the lowerest left corner of the data matrix.}
+\item{affdDiagonals}{Diagonals to be used for cohort effects. The first diagonal is at the bottom left corner of the data matrix.}
 
 \item{affdYears}{Years to be used for period effects.}
 

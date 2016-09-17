@@ -32,7 +32,7 @@ smoothAPC(data, lambda = 1, lambdaaa = 1, lambdayy = 1, lambdaay = 1,
 
 \item{cornerLength}{Sets the smallest length of a diagonal to be considered for cohort effects.}
 
-\item{effects}{Controls if the cohort and period effects are taking into account.}
+\item{effects}{Controls if the cohort and period effects are taken into account.}
 
 \item{affdDiagonals}{Diagonals to be used for cohort effects.}
 
