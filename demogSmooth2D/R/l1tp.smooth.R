@@ -379,7 +379,7 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' @param lambdaCohortEffect Controls "flexibility" of the cohort effects.
 #' @param thetaCohortEffect Reduces the likelihood of cohort effects.
 #' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
-#' @param effects Controls if the cohort and period effects are taking into account.
+#' @param effects Controls if the cohort and period effects are taken into account.
 #' @param affdDiagonals Diagonals to be used for cohort effects.
 #' @param affdYears Years to be used for period effects.
 #' @param control Control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function..

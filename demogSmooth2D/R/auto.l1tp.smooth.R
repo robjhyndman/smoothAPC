@@ -17,7 +17,7 @@ smoothAPC.wrapper = function(...)
 # Estimates smoothing parameters
 #
 # @param data Demographic data presented as a matrix.
-# @param effects Controls if the cohort and period effects are taking into account.
+# @param effects Controls if the cohort and period effects are taken into account.
 # @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects. The first diagonal is at the bottom left corner of the data matrix.
 # @param affdDiagonals Diagonals to be used for cohort effects.
 # @param affdYears Years to be used for period effects.
@@ -153,9 +153,9 @@ estYY = function(data,
 #' available years and diagonals for estimation of the period and cohort effects.
 #'
 #' @param data Demographic data presented as a matrix.
-#' @param effects Controls if the cohort and period effects are taking into account.
+#' @param effects Controls if the cohort and period effects are taken into account.
 #' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
-#' @param affdDiagonals Diagonals to be used for cohort effects. The first diagonal is at the lowerest left corner of the data matrix.
+#' @param affdDiagonals Diagonals to be used for cohort effects. The first diagonal is at the bottom left corner of the data matrix.
 #' @param affdYears Years to be used for period effects.
 #' @param lower Lowest possible values for the optimization procedure.
 #' @param upper Highest possible values for the optimization procedure.
@@ -356,7 +356,7 @@ signifAutoSmoothAPC = function(data,
                    control = control)$cvResiduals
   affd = getAffected(resid2, p.value = p.value)
   affd$affdYears = sort(union(affd$affdYears, colsNA))
-  # Estimating also taking into account period and cohort effects
+  # Estimating also period and cohort effects
   parameters = estPar(data,
                       effects = TRUE,
                       affdDiagonals = affd$affdDiagonals,
