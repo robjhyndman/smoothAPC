@@ -10,5 +10,5 @@ Description: The implemented method uses for smoothing bivariate thin plate spli
 License: GPL (>= 2)
 URL: https://bitbucket.org/alexanderdokumentov/smoothapcpackage
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.0
 Suggests: testthat, demography

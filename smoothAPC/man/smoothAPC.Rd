@@ -9,10 +9,11 @@ smoothAPC(data, lambda = 1, lambdaaa = 1, lambdayy = 1, lambdaay = 1,
   lambdaCohortEffect = 5, thetaCohortEffect = 0.1 * lambda,
   cornerLength = 7, effects = TRUE, affdDiagonals = NULL,
   affdYears = NULL, control = list(nnzlmax = 1e+06, nsubmax = 2e+06, tmpmax
-  = 2e+05))
+  = 2e+05), exposure = NULL)
 }
 \arguments{
-\item{data}{Demographic data presented as a matrix.}
+\item{data}{Demographic data (log mortality) presented as a matrix.
+Row numbers represent ages and column numbers represet time.}
 
 \item{lambda}{Controls "general flexibility" of the smooth surface.}
 
@@ -39,6 +40,8 @@ smoothAPC(data, lambda = 1, lambdaaa = 1, lambdayy = 1, lambdaay = 1,
 \item{affdYears}{Years to be used for period effects.}
 
 \item{control}{Control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function..}
+
+\item{exposure}{population data (number of person-years of exposure to risk).}
 }
 \value{
 List of three components: smooth surface, period effects, cohort effects.
@@ -57,13 +60,12 @@ plot(sm)
 
 }
 }
-\author{
-Alexander Dokumentov
-}
 \references{
 \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 }
 \seealso{
 \code{\link{autoSmoothAPC}}, \code{\link{signifAutoSmoothAPC}}.
 }
-
+\author{
+Alexander Dokumentov
+}

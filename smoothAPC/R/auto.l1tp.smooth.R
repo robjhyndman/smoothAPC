@@ -18,7 +18,7 @@ smoothAPC.wrapper = function(...)
 #
 # @param data Demographic data presented as a matrix.
 # @param effects Controls if the cohort and period effects are taken into account.
-# @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects. The first diagonal is at the bottom left corner of the data matrix.
+# @param cornerLength Minimal length of a diagonal to be considered for cohort effects. The first diagonal is at the bottom left corner of the data matrix.
 # @param affdDiagonals Diagonals to be used for cohort effects.
 # @param affdYears Years to be used for period effects.
 # @param parameters Optional vector with some initial values to replace values in init parameter.
@@ -28,6 +28,7 @@ smoothAPC.wrapper = function(...)
 # @param reltol Relative tolerance parameter to be supplied to \code{\link[stats]{optim}} function.
 # @param trace Controls if tracing is on.
 # @param control The control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function.
+# @param exposure population data (number of person-years of exposure to risk).
 # @return A vector of optimal smoothing parameters.
 # @examples
 # \dontrun{
@@ -52,7 +53,8 @@ estPar = function(data,
                   init =  head(c(0.1,  0.1,  0.2,  4,   0.05, 4,   0.05), 3 + effects*4),
                   reltol = 0.001,
                   trace = F,
-                  control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000))
+                  control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000),
+                  exposure = NULL)
 {
   counter = 0
 
@@ -88,7 +90,8 @@ estPar = function(data,
                    lambdaCohortEffect = lambdaCohortEffect, thetaCohortEffect = thetaCohortEffect,
                    cornerLength = cornerLength, effects = effects,
                    affdDiagonals = affdDiagonals, affdYears = affdYears,
-                   control = control)
+                   control = control,
+                   exposure = exposure)
     # })
     if(trace) {
       # print(time)
@@ -113,7 +116,8 @@ estAA = function(data,
                  upper = 10,
                  step = 0.2,
                  trace = trace,
-                 control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000))
+                 control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000),
+                 exposure = NULL)
 {
   lambdas = seq(lower, upper, by = step)
   cv = 0
@@ -121,7 +125,7 @@ estAA = function(data,
     if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
     cv[i] <- smoothCv(smoothAPC.wrapper, data = data,
                       lambda = 1, lambdaaa = lambdas[i], lambdayy = 0, lambdaay = 0,
-                      effects = FALSE, control = control)$MAE
+                      effects = FALSE, control = control, exposure = exposure)$MAE
     if(trace) {print(paste("lambdaAA:", lambdas[i])); print(cv[i])}
   }
   return(lambdas[which.min(cv)])
@@ -132,7 +136,8 @@ estYY = function(data,
                  upper = 10,
                  step = 0.2,
                  trace = trace,
-                 control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000))
+                 control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000),
+                 exposure = NULL)
 {
   lambdas = seq(lower, upper, by = step)
   cv = 0
@@ -140,7 +145,7 @@ estYY = function(data,
     if(!trace) {cat("\r "); cat(paste0(c("\\","|","/","-")[i %% 4 + 1], "   "))}
     cv[i] <- smoothCv(smoothAPC.wrapper, data = data,
                       lambda = 1, lambdaaa = 0, lambdayy = lambdas[i], lambdaay = 0,
-                      effects = FALSE, control = control)$MAE
+                      effects = FALSE, control = control, exposure = exposure)$MAE
     if(trace) {print(paste("lambdaYY:", lambdas[i])); print(cv[i])}
   }
   return(lambdas[which.min(cv)])
@@ -152,10 +157,12 @@ estYY = function(data,
 #' If period and cohort effects are taken into account (effects = TRUE) the method uses all
 #' available years and diagonals for estimation of the period and cohort effects.
 #'
-#' @param data Demographic data presented as a matrix.
+#' @param data Demographic data (log mortality) presented as a matrix.
+#' Row numbers represent ages and column numbers represet time.
 #' @param effects Controls if the cohort and period effects are taken into account.
 #' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
-#' @param affdDiagonals Diagonals to be used for cohort effects. The first diagonal is at the bottom left corner of the data matrix.
+#' @param affdDiagonals Diagonals to be used for cohort effects.
+#' The first diagonal is at the bottom left corner of the data matrix (maximal age and minimal time in the data matrix).
 #' @param affdYears Years to be used for period effects.
 #' @param lower Lowest possible values for the optimization procedure.
 #' @param upper Highest possible values for the optimization procedure.
@@ -164,6 +171,7 @@ estYY = function(data,
 #' @param parameters Optional model parameters. If not provided, they are estimated.
 #' @param trace Controls if tracing is on.
 #' @param control The control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function.
+#' @param exposure population data (number of person-years of exposure to risk).
 #' @return A list of four components: smooth surface, period effects, cohort effects and parameters
 #' used for smoothing (passed as a parameter or estimated).
 #' @examples
@@ -184,17 +192,18 @@ estYY = function(data,
 #' @export
 
 autoSmoothAPC = function(data,
-                           effects = TRUE,
-                           cornerLength = 7,
-                           affdDiagonals = NULL,
-                           affdYears = NULL,
-                           lower = head(c(0.01, 0.01, 0.01, 2.0, 0.001, 2.0, 0.001), 3 + effects*4),
-                           upper = head(c(1.2,  1.8,  1.2,  12,  0.4,  12,  0.4), 3 + effects*4),
-                           init =  head(c(0.1,  0.1,  0.2,  4,   0.01, 4,   0.01), 3 + effects*4),
-                           reltol = 0.001,
-                           parameters = NULL,
-                           trace = F,
-                           control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000))
+                         effects = TRUE,
+                         cornerLength = 7,
+                         affdDiagonals = NULL,
+                         affdYears = NULL,
+                         lower = head(c(0.01, 0.01, 0.01, 2.0, 0.001, 2.0, 0.001), 3 + effects*4),
+                         upper = head(c(1.2,  1.8,  1.2,  12,  0.4,  12,  0.4), 3 + effects*4),
+                         init =  head(c(0.1,  0.1,  0.2,  4,   0.01, 4,   0.01), 3 + effects*4),
+                         reltol = 0.001,
+                         parameters = NULL,
+                         trace = F,
+                         control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000),
+                         exposure = NULL)
 {
   if(missing(parameters)) {
     parameters = estPar(data,
@@ -207,20 +216,22 @@ autoSmoothAPC = function(data,
                         init =  init,
                         reltol = reltol,
                         trace = trace,
-                        control = control)$par
+                        control = control,
+                        exposure = exposure)$par
   }
   result = smoothAPC(data,
-                       lambda = 1,
-                       lambdaaa = parameters[1],
-                       lambdayy = parameters[2],
-                       lambdaay = parameters[3],
-                       lambdaYearsEffect = parameters[4],
-                       thetaYearsEffect = parameters[5],
-                       lambdaCohortEffect = parameters[6],
-                       thetaCohortEffect = parameters[7],
-                       cornerLength = cornerLength,
-                       effects = effects,
-                       control = control)
+                     lambda = 1,
+                     lambdaaa = parameters[1],
+                     lambdayy = parameters[2],
+                     lambdaay = parameters[3],
+                     lambdaYearsEffect = parameters[4],
+                     thetaYearsEffect = parameters[5],
+                     lambdaCohortEffect = parameters[6],
+                     thetaCohortEffect = parameters[7],
+                     cornerLength = cornerLength,
+                     effects = effects,
+                     control = control,
+                     exposure = exposure)
   result$parameters = parameters
   return(result)
 }
@@ -262,16 +273,18 @@ getAffected = function(resid, p.value = 0.05)
 #' period and cohort effects in the data. It also uses a few steps to estimate
 #' model's parameters. The procedure is supposed to outperform \code{\link{autoSmoothAPC}} slightly.
 #'
-#' @param data Demographic data presented as a matrix.
+#' @param data Demographic data (log mortality) presented as a matrix.
+#' Row numbers represent ages and column numbers represet time.
 #' @param p.value P-value used to test the period and the cohort effects for significance.
 #' The lower the value the fewer diagonals and years will be used to find cohort and period effects.
-#' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
+#' @param cornerLength Minimal length of a diagonal to be considered for cohort effects.
 #' @param lower Lowest possible values for the optimization procedure.
 #' @param upper Highest possible values for the optimization procedure.
 #' @param init Initial values for the optimization procedure.
 #' @param reltol Relative tolerance parameter to be supplied to \code{\link[stats]{optim}} function.
 #' @param trace Controls if tracing is on.
 #' @param control The control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function.
+#' @param exposure population data (number of person-years of exposure to risk).
 #' @return A list of six components: smooth surface, period effects, cohort effects, parameters
 #' used for smoothing, diagonals used for cohort effects and years used for period effects.
 #' @examples
@@ -296,18 +309,20 @@ signifAutoSmoothAPC = function(data,
                               p.value = 0.05,
                               cornerLength = 7,
                               lower = c(0.01, 0.01, 0.01, 1.0, 0.001, 1.0, 0.001),
-                              upper = c(1.2,  1.8,  1.2,  12,  0.4,  12,  0.4),
+                              upper = c(1.2,  1.8,  1.2,  12,  0.4,   12,  0.4),
                               init =  c(0.1,  0.1,  0.2,  4,   0.001, 4,   0.001),
                               reltol = 0.001,
                               trace = F,
-                              control = list(nnzlmax=1000000, nsubmax = 2000000, tmpmax = 200000))
+                              control = list(nnzlmax=1000000, nsubmax = 2000000, tmpmax = 200000),
+                              exposure = NULL)
 {
   lambdayy = estYY(data,
                    lower = lower[2],
                    upper = upper[2],
                    step = abs(upper[2]-lower[2])/20,
                    trace = trace,
-                   control = control)
+                   control = control,
+                   exposure = exposure)
   resid = smoothCv(smoothAPC.wrapper,
                    data = data,
                    lambda = 1,
@@ -315,20 +330,23 @@ signifAutoSmoothAPC = function(data,
                    lambdayy = lambdayy,
                    lambdaay = 0,
                    effects = FALSE,
-                   control = control)$cvResiduals
+                   control = control,
+                   exposure = exposure)$cvResiduals
   lambdaYearsEffect = estAA(resid,
-                           lower = lower[4],
-                           upper = upper[4],
-                           step = abs(upper[4]-lower[4])/20,
-                           trace = trace,
-                           control = control)
+                            lower = lower[4],
+                            upper = upper[4],
+                            step = abs(upper[4]-lower[4])/20,
+                            trace = trace,
+                            control = control,
+                            exposure = exposure)
   result1 = smoothAPC(resid,
-                       lambda = 1,
-                       lambdaaa = lambdaYearsEffect,
-                       lambdayy = 0,
-                       lambdaay = 0,
-                       effects = F,
-                       control = control)
+                      lambda = 1,
+                      lambdaaa = lambdaYearsEffect,
+                      lambdayy = 0,
+                      lambdaay = 0,
+                      effects = F,
+                      control = control,
+                      exposure = exposure)
   vals = colSums(abs(result1$result))
   dataNA = data
   colsNA = NULL
@@ -345,15 +363,17 @@ signifAutoSmoothAPC = function(data,
                         init = init[1:3],
                         reltol = reltol,
                         trace = trace,
-                        control = control)$par
+                        control = control,
+                        exposure = exposure)$par
   resid2 = smoothCv(smoothAPC.wrapper,
-                   data = data,
-                   lambda = 1,
-                   lambdaaa = parametersNA[1],
-                   lambdayy = parametersNA[2],
-                   lambdaay = parametersNA[3],
-                   effects = FALSE,
-                   control = control)$cvResiduals
+                    data = data,
+                    lambda = 1,
+                    lambdaaa = parametersNA[1],
+                    lambdayy = parametersNA[2],
+                    lambdaay = parametersNA[3],
+                    effects = FALSE,
+                    control = control,
+                    exposure = exposure)$cvResiduals
   affd = getAffected(resid2, p.value = p.value)
   affd$affdYears = sort(union(affd$affdYears, colsNA))
   # Estimating also period and cohort effects
@@ -368,21 +388,23 @@ signifAutoSmoothAPC = function(data,
                       init = init,
                       reltol = reltol,
                       trace = trace,
-                      control = control)$par
+                      control = control,
+                      exposure = exposure)$par
   result = smoothAPC(data,
-                       lambda = 1,
-                       lambdaaa = parameters[1],
-                       lambdayy = parameters[2],
-                       lambdaay = parameters[3],
-                       lambdaYearsEffect = parameters[4],
-                       thetaYearsEffect = parameters[5],
-                       lambdaCohortEffect = parameters[6],
-                       thetaCohortEffect = parameters[7],
-                       cornerLength = cornerLength,
-                       effects = TRUE,
-                       affdDiagonals = affd$affdDiagonals,
-                       affdYears = affd$affdYears,
-                       control = control)
+                     lambda = 1,
+                     lambdaaa = parameters[1],
+                     lambdayy = parameters[2],
+                     lambdaay = parameters[3],
+                     lambdaYearsEffect = parameters[4],
+                     thetaYearsEffect = parameters[5],
+                     lambdaCohortEffect = parameters[6],
+                     thetaCohortEffect = parameters[7],
+                     cornerLength = cornerLength,
+                     effects = TRUE,
+                     affdDiagonals = affd$affdDiagonals,
+                     affdYears = affd$affdYears,
+                     control = control,
+                     exposure = exposure)
   residuals = result$original - result$result - result$yearsEffect - result$cohortEffect
   # Removing very small period effects:
   affd$affdYears = which(colSums(result$yearsEffect) > 2 * mean(abs(residuals)))
@@ -398,24 +420,25 @@ signifAutoSmoothAPC = function(data,
                       init = init,
                       reltol = reltol,
                       trace = trace,
-                      control = control)$par
+                      control = control,
+                      exposure = exposure)$par
   result = smoothAPC(data,
-                       lambda = 1,
-                       lambdaaa = parameters[1],
-                       lambdayy = parameters[2],
-                       lambdaay = parameters[3],
-                       lambdaYearsEffect = parameters[4],
-                       thetaYearsEffect = parameters[5],
-                       lambdaCohortEffect = parameters[6],
-                       thetaCohortEffect = parameters[7],
-                       cornerLength = cornerLength,
-                       effects = TRUE,
-                       affdDiagonals = affd$affdDiagonals,
-                       affdYears = affd$affdYears,
-                       control = control)
+                     lambda = 1,
+                     lambdaaa = parameters[1],
+                     lambdayy = parameters[2],
+                     lambdaay = parameters[3],
+                     lambdaYearsEffect = parameters[4],
+                     thetaYearsEffect = parameters[5],
+                     lambdaCohortEffect = parameters[6],
+                     thetaCohortEffect = parameters[7],
+                     cornerLength = cornerLength,
+                     effects = TRUE,
+                     affdDiagonals = affd$affdDiagonals,
+                     affdYears = affd$affdYears,
+                     control = control,
+                     exposure = exposure)
   result$parameters = parameters
   result$affdDiagonals = affd$affdDiagonals
   result$affdYears = affd$affdYears
   return(result)
 }
-

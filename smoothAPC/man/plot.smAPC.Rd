@@ -44,4 +44,3 @@ plot(sm, "original", main = "Original data")
 \author{
 Alexander Dokumentov
 }
-
