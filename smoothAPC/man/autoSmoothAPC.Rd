@@ -63,12 +63,13 @@ plot(sm, "cohort")
 
 }
 }
+\author{
+Alexander Dokumentov
+}
 \references{
 \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
 }
 \seealso{
 \code{\link{smoothAPC}} and \code{\link{signifAutoSmoothAPC}}. The latter might give slightly better performance.
 }
-\author{
-Alexander Dokumentov
-}
+

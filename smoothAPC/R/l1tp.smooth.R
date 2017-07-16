@@ -19,7 +19,7 @@ initialize = compiler::cmpfun(function(env, nRows, nCols, len) {
   env$l <- 0L
 })
 
-l1tp.getTargetVector = function(y, cohHelper, yearsHelper, effects)
+l1tp.getTargetVector = function(y, cohHelper, yearsHelper, effects, weights)
 {
   nAges = dim(y)[1]
   nYears = dim(y)[2]
@@ -35,7 +35,7 @@ l1tp.getTargetVector = function(y, cohHelper, yearsHelper, effects)
   }
 
   return(
-    c(y, rep(0, agesDiffLength + yearsDiffLength + agesYearsDiffLength +
+    c(y * weights, rep(0, agesDiffLength + yearsDiffLength + agesYearsDiffLength +
       ifelse(effects, yearsEffectDiffLength + yearsEffectDistLength + cohortDiffLength + cohortDistLength, 0L)))
   )
 }
@@ -330,7 +330,7 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
   } else {
     mortalityRates = exp(data)
     if(any(mortalityRates <=0 || mortalityRates >= 1)) {
-      stop("Cannot use exposure since 'data' parameter does not contain log mortality rates")
+      stop("Cannot use exposure since 'data' parameter contains values which cannot be logs of mortality rates")
     }
     variances = (1 - mortalityRates)/(exposure * mortalityRates)
     weights = sqrt(1/variances)
@@ -347,7 +347,7 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
   sm = as.matrix.csr(mcoo)
 
   rm(mcoo)
-  target <- l1tp.getTargetVector(data, cohHelper = cohHelper, yearsHelper = yearsHelper, effects = effects)
+  target <- l1tp.getTargetVector(data, cohHelper = cohHelper, yearsHelper = yearsHelper, effects = effects, weights = weights)
 
   goodRows = rep(FALSE, length(target))
   goodRows[ia[ra != 0]] = TRUE

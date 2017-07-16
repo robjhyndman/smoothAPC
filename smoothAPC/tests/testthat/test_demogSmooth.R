@@ -23,15 +23,16 @@ test_that("Testing smoothAPC on linear data with one outlier and w/o ridges, eff
 
 # Some nonlinear data
 mm = m^10 + t(m)^9
-mm = mm/max(mm)
-exposure = mm[,ncol(mm):1]
-plot3d(mm)
-plot3d(exposure)
+mm = log(mm/(max(mm)*1.2))
+exposure = exp(mm[,ncol(mm):1])
+plot(mm)
+plot(exposure)
 
 smm = smoothAPC(mm + err, effects = FALSE)
 plot(smm)
-smm2 = smoothAPC(mm + err, effects = FALSE, exposure = exposure)
-plot(smm)
+smm2 = smoothAPC(mm, effects = FALSE, exposure = exposure)
+smm3 = smoothAPC(mm, effects = FALSE)
+plot(smm2)
 
 # Matrix with a cohort effect
 coh = matrix(0, 10,10)
