@@ -25,14 +25,12 @@ test_that("Testing smoothAPC on linear data with one outlier and w/o ridges, eff
 mm = m^10 + t(m)^9
 mm = log(mm/(max(mm)*1.2))
 exposure = exp(mm[,ncol(mm):1])
-plot(mm)
-plot(exposure)
 
-smm = smoothAPC(mm + err, effects = FALSE)
-plot(smm)
-smm2 = smoothAPC(mm, effects = FALSE, exposure = exposure)
-smm3 = smoothAPC(mm, effects = FALSE)
-plot(smm2)
+test_that("Testing smoothAPC on nonlinear data with exposure", {
+  smm1 = smoothAPC(mm, effects = FALSE, exposure = exposure)
+  smm2 = smoothAPC(mm, effects = FALSE)
+  expect_true(sum(abs(smm1$result - smm2$result)) > 40)
+})
 
 # Matrix with a cohort effect
 coh = matrix(0, 10,10)
