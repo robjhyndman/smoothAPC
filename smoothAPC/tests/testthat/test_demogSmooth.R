@@ -32,6 +32,13 @@ test_that("Testing smoothAPC on nonlinear data with exposure", {
   expect_true(sum(abs(smm1$result - smm2$result)) > 40)
 })
 
+test_that("Testing smoothAPC on nonlinear data with NAs with exposure", {
+  mm[3,3] = NA
+  mm[5,5] = NA
+  mm[7,7] = NA
+  smm = smoothAPC(mm, effects = FALSE, exposure = exposure)
+})
+
 # Matrix with a cohort effect
 coh = matrix(0, 10,10)
 diag(coh) = 1000

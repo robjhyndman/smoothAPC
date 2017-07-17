@@ -33,3 +33,13 @@ test_that("Testing signifAutoSmoothAPC on linear data with noise, period and coh
   expect_equivalent(sm$yearsEffect, per)
   expect_equivalent(sm$cohortEffect, coh)
 })
+
+# Some nonlinear data
+mm = m^10 + t(m)^9
+mm = log(mm/(max(mm)*1.2))
+exposure = exp(mm[,ncol(mm):1])
+test_that("Testing signifAutoSmoothAPC on linear data with noise, period and cohort effects", {
+  smm1 = signifAutoSmoothAPC(data = mm)
+  smm2 = signifAutoSmoothAPC(data = mm, exposure = exposure)
+  expect_true(sum(abs(smm1$parameters - smm2$parameters)) > 0.1)
+})
