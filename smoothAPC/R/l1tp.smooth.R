@@ -328,8 +328,10 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
   if(is.null(exposure)) {
     weights = matrix(1, nrow(data), ncol(data))
   } else {
-    mortalityRates = exp(data)
-    if(any(mortalityRates <=0 || mortalityRates >= 1)) {
+    dataNoNA = data
+    dataNoNA[is.na(dataNoNA)] = -30 # Does not matter as NA values will be ignored
+    mortalityRates = exp(dataNoNA)
+    if(any(mortalityRates <=0 || mortalityRates >= 1, na.rm = TRUE)) {
       stop("Cannot use exposure since 'data' parameter contains values which cannot be logs of mortality rates")
     }
     variances = (1 - mortalityRates)/(exposure * mortalityRates)
