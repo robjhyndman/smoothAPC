@@ -312,7 +312,7 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
                                     lambdaCohortEffect = 5, thetaCohortEffect = 0.1*lambda,
                                     cornerLength = 7, effects = TRUE, affdDiagonals = NULL, affdYears = NULL,
                                     control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000),
-                                    exposure = NULL)
+                                    weights = NULL)
 {
   if(effects) {
     yearsHelper = new.env(parent = .GlobalEnv)
@@ -324,19 +324,8 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
     yearsHelper = NULL
     cohHelper = NULL
   }
+  if(is.null(weights)) weights = matrix(1, nrow(data), ncol(data))
 
-  if(is.null(exposure)) {
-    weights = matrix(1, nrow(data), ncol(data))
-  } else {
-    dataNoNA = data
-    dataNoNA[is.na(dataNoNA)] = -32 # Does not matter as NA values will be ignored
-    mortalityRates = exp(dataNoNA)
-    if(any(mortalityRates <=0 | mortalityRates >= 1, na.rm = TRUE)) {
-      stop("Cannot use exposure since 'data' parameter contains values which cannot be logs of mortality rates")
-    }
-    variances = (1 - mortalityRates)/(exposure * mortalityRates)
-    weights = sqrt(1/variances)
-  }
   m = l1tp.getDesignMatrix(dim(data), lambda = lambda, lambdaaa = lambdaaa, lambdayy = lambdayy, lambdaay = lambdaay,
                            lambdaYearsEffect = lambdaYearsEffect, thetaYearsEffect = thetaYearsEffect,
                            lambdaCohortEffect = lambdaCohortEffect, thetaCohortEffect = thetaCohortEffect,
@@ -400,7 +389,9 @@ l1tp.smooth.demogdata.nc = function(data, lambda = 1, lambdaaa = 1, lambdayy = 1
 #' @param affdDiagonals Diagonals to be used for cohort effects.
 #' @param affdYears Years to be used for period effects.
 #' @param control Control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function..
-#' @param exposure population data (number of person-years of exposure to risk).
+#' @param weights Define how much every observation effect the resulting smooth surface.
+#' The parameter must have same dimentions as \code{data} parameter.
+#' Weights can be set to reciprocal of estimated standard deviation of the data.
 #' @return List of three components: smooth surface, period effects, cohort effects.
 #' @examples
 #' \dontrun{

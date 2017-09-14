@@ -38,8 +38,10 @@ test_that("Testing signifAutoSmoothAPC on linear data with noise, period and coh
 mm = m^10 + t(m)^9
 mm = log(mm/(max(mm)*1.2))
 exposure = exp(mm[,ncol(mm):1])
+weights = sqrt((exposure * exp(mm))/(1 - exp(mm)))
+
 test_that("Testing signifAutoSmoothAPC on linear data with noise, period and cohort effects", {
   smm1 = signifAutoSmoothAPC(data = mm)
-  smm2 = signifAutoSmoothAPC(data = mm, exposure = exposure)
+  smm2 = signifAutoSmoothAPC(data = mm, weights = weights)
   expect_true(sum(abs(smm1$parameters - smm2$parameters)) > 0.1)
 })
