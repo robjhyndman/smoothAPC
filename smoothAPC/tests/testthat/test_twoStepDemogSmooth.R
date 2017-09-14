@@ -19,6 +19,7 @@ per = matrix(0, 10,10)
 per[,5] = 1000
 
 test_that("Testing signifAutoSmoothAPC on linear data with noise", {
+  skip_on_cran()
   sm = signifAutoSmoothAPC(data = m + err)
   expect_equivalent(sm$result, m)
   expect_equivalent(sm$yearsEffect, zer)
@@ -28,6 +29,7 @@ test_that("Testing signifAutoSmoothAPC on linear data with noise", {
 })
 
 test_that("Testing signifAutoSmoothAPC on linear data with noise, period and cohort effects", {
+  skip_on_cran()
   sm = signifAutoSmoothAPC(data = m + coh + per + err)
   expect_equivalent(sm$result, m)
   expect_equivalent(sm$yearsEffect, per)
@@ -41,6 +43,7 @@ exposure = exp(mm[,ncol(mm):1])
 weights = sqrt((exposure * exp(mm))/(1 - exp(mm)))
 
 test_that("Testing signifAutoSmoothAPC on linear data with noise, period and cohort effects", {
+  skip_on_cran()
   smm1 = signifAutoSmoothAPC(data = mm)
   smm2 = signifAutoSmoothAPC(data = mm, weights = weights)
   expect_true(sum(abs(smm1$parameters - smm2$parameters)) > 0.1)
