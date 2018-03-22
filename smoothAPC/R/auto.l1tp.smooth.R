@@ -253,15 +253,15 @@ getAffected = function(resid, p.value = 0.05)
 {
   d = diags(resid)
   p.values.t.1 = vapply(2:(nrow(d)-1), function(i) my.t.test(x=d[i,]), c(p.value=0))
-  affdDiagonals1 = (2:(nrow(d)-1))[p.values.t.1 <= 0.05]
+  affdDiagonals1 = (2:(nrow(d)-1))[p.values.t.1 <= p.value]
   p.values.t.2 = vapply(3:(nrow(d)-2), function(i) my.t.test(x=d[i,-1]*d[i,-ncol(d)], alternative="greater"), c(p.value=0))
-  affdDiagonals2 = (3:(nrow(d)-2))[p.values.t.2 <= 0.05]
+  affdDiagonals2 = (3:(nrow(d)-2))[p.values.t.2 <= p.value]
   affdDiagonals = sort(union(affdDiagonals1, affdDiagonals2))
 
   p.values.t.3 = vapply(1:ncol(resid), function(j) my.t.test(x=resid[,j]), c(p.value=0))
-  affdYears1 = (1:ncol(resid))[p.values.t.3 <= 0.05]
+  affdYears1 = (1:ncol(resid))[p.values.t.3 <= p.value]
   p.values.t.4 = vapply(1:ncol(resid), function(j) my.t.test(x=resid[-1,j]*resid[-nrow(resid),j], alternative="greater"), c(p.value=0))
-  affdYears2 = (1:ncol(resid))[p.values.t.4 <= 0.05]
+  affdYears2 = (1:ncol(resid))[p.values.t.4 <= p.value]
   affdYears = sort(union(affdYears1, affdYears2))
 
   return(list(affdYears = affdYears, affdDiagonals = affdDiagonals))

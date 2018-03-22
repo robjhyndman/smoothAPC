@@ -42,3 +42,4 @@ plot3d(sm, "original", color.palette = rainbow)
 \author{
 Alexander Dokumentov
 }
+
