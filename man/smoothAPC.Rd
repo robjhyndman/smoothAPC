@@ -4,12 +4,23 @@
 \alias{smoothAPC}
 \title{Smooths demographic data optionally taking into account period and cohort effects}
 \usage{
-smoothAPC(data, lambda = 1, lambdaaa = 1, lambdayy = 1, lambdaay = 1,
-  lambdaYearsEffect = 5, thetaYearsEffect = 0.1 * lambda,
-  lambdaCohortEffect = 5, thetaCohortEffect = 0.1 * lambda,
-  cornerLength = 7, effects = TRUE, affdDiagonals = NULL,
-  affdYears = NULL, control = list(nnzlmax = 1e+06, nsubmax = 2e+06, tmpmax
-  = 2e+05), weights = NULL)
+smoothAPC(
+  data,
+  lambda = 1,
+  lambdaaa = 1,
+  lambdayy = 1,
+  lambdaay = 1,
+  lambdaYearsEffect = 5,
+  thetaYearsEffect = 0.1 * lambda,
+  lambdaCohortEffect = 5,
+  thetaCohortEffect = 0.1 * lambda,
+  cornerLength = 7,
+  effects = TRUE,
+  affdDiagonals = NULL,
+  affdYears = NULL,
+  control = list(nnzlmax = 1e+06, nsubmax = 2e+06, tmpmax = 2e+05),
+  weights = NULL
+)
 }
 \arguments{
 \item{data}{Demographic data (log mortality) presented as a matrix.
@@ -59,11 +70,7 @@ m <- log(fr.mort$rate$female[1:30, 150:160])
 sm <- smoothAPC(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
 plot(sm, "original")
 plot(sm)
-
 }
-}
-\author{
-Alexander Dokumentov
 }
 \references{
 \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
@@ -71,4 +78,6 @@ Alexander Dokumentov
 \seealso{
 \code{\link{autoSmoothAPC}}, \code{\link{signifAutoSmoothAPC}}.
 }
-
+\author{
+Alexander Dokumentov
+}

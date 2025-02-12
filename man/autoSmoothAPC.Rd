@@ -5,13 +5,21 @@
 \title{Smooths demographic data using automatically estimated parameters and optionally
 taking into account period and cohort effects}
 \usage{
-autoSmoothAPC(data, effects = TRUE, cornerLength = 7,
-  affdDiagonals = NULL, affdYears = NULL, lower = head(c(0.01, 0.01, 0.01,
-  2, 0.001, 2, 0.001), 3 + effects * 4), upper = head(c(1.2, 1.8, 1.2, 12,
-  0.4, 12, 0.4), 3 + effects * 4), init = head(c(0.1, 0.1, 0.2, 4, 0.001, 4,
-  0.001), 3 + effects * 4), reltol = 0.001, parameters = NULL, trace = F,
+autoSmoothAPC(
+  data,
+  effects = TRUE,
+  cornerLength = 7,
+  affdDiagonals = NULL,
+  affdYears = NULL,
+  lower = head(c(0.01, 0.01, 0.01, 2, 0.001, 2, 0.001), 3 + effects * 4),
+  upper = head(c(1.2, 1.8, 1.2, 12, 0.4, 12, 0.4), 3 + effects * 4),
+  init = head(c(0.1, 0.1, 0.2, 4, 0.001, 4, 0.001), 3 + effects * 4),
+  reltol = 0.001,
+  parameters = NULL,
+  trace = F,
   control = list(nnzlmax = 1e+06, nsubmax = 2e+06, tmpmax = 2e+05),
-  weights = NULL)
+  weights = NULL
+)
 }
 \arguments{
 \item{data}{Demographic data (log mortality) presented as a matrix.
@@ -62,11 +70,7 @@ sm <- autoSmoothAPC(m)
 plot(sm)
 plot(sm, "period")
 plot(sm, "cohort")
-
 }
-}
-\author{
-Alexander Dokumentov
 }
 \references{
 \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
@@ -74,4 +78,6 @@ Alexander Dokumentov
 \seealso{
 \code{\link{smoothAPC}} and \code{\link{signifAutoSmoothAPC}}. The latter might give slightly better performance.
 }
-
+\author{
+Alexander Dokumentov
+}

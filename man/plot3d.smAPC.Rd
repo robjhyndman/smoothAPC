@@ -4,9 +4,13 @@
 \alias{plot3d.smAPC}
 \title{Presents demographic data as a 3D surface}
 \usage{
-\method{plot3d}{smAPC}(x, component = c("all", "surface", "period", "cohort",
-  "residuals", "original"), labs = c("Age", "Time", NA),
-  color.palette = c("default", "special"), ...)
+\method{plot3d}{smAPC}(
+  x,
+  component = c("all", "surface", "period", "cohort", "residuals", "original"),
+  labs = c("Age", "Time", NA),
+  color.palette = c("default", "special"),
+  ...
+)
 }
 \arguments{
 \item{x}{Result of smoothing (object of class \code{smAPC}).}
@@ -36,10 +40,8 @@ plot3d(sm, "cohort")
 plot3d(sm, "period")
 plot3d(sm, "residuals")
 plot3d(sm, "original", color.palette = rainbow)
-
 }
 }
 \author{
 Alexander Dokumentov
 }
-

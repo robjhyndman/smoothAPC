@@ -3,8 +3,10 @@ Version: 0.3
 Date: 2017-09-14
 Title: Smoothing of Two-Dimensional Demographic Data, Optionally Taking into
     Account Period and Cohort Effects
-Author: Alexander Dokumentov, Rob J Hyndman
-Maintainer: Alexander Dokumentov <alexander.dokumentov@gmail.com>
+Authors@R: c(
+  person("Alexander", "Dokumentov", role = c("aut","cph"), comment = c(ORCID = "0000-0003-0478-0983")),
+  person("Rob", "Hyndman", email="Rob.Hyndman@monash.edu", role=c("aut", "cre"), comment = c(ORCID = "0000-0002-2140-5352"))
+  )
 Depends:
     R (>= 3.2.2)
 Imports:
@@ -16,15 +18,12 @@ Imports:
     rgl,
     colorspace,
     methods
-Description: The implemented method uses for smoothing bivariate thin plate
-    splines, bivariate lasso-type regularization, and allows for both period
-    and cohort effects. Thus the mortality rates are modelled as the sum of four
-    components: a smooth bivariate function of age and time, smooth one-dimensional
-    cohort effects, smooth one-dimensional period effects and random errors.
+Description: Mortality rates are modelled as the sum of four components; a smooth bivariate function of age and time, smooth one-dimensional cohort effects, smooth one-dimensional period effects, and random errors. The model uses bivariate thin plate splines, bivariate lasso-type regularization, and allows for both period and cohort effects.
 License: GPL (>= 2)
-URL: https://bitbucket.org/alexanderdokumentov/smoothapcpackage
+URL: https://github.com/robjhyndman/smoothAPC
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 7.3.2
+Encoding: UTF-8
 Suggests:
     testthat,
     demography

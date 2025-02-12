@@ -4,8 +4,12 @@
 \alias{plot3d.matrix}
 \title{Presents matrix as a 3D surface}
 \usage{
-\method{plot3d}{matrix}(x, labs = c("X", "Y", "Z"),
-  color.palette = c("default", "special"), ...)
+\method{plot3d}{matrix}(
+  x,
+  labs = c("X", "Y", "Z"),
+  color.palette = c("default", "special"),
+  ...
+)
 }
 \arguments{
 \item{x}{Matrix to plot.}
@@ -23,8 +27,8 @@ Presents matrix as a 3D surface
 \examples{
 \dontrun{
 
-plot3d(matrix(rnorm(100),10,10))
-plot3d(matrix(1:100,10,10), c("Dimension 1", "Dimension 2", "Value"))
+plot3d(matrix(rnorm(100), 10, 10))
+plot3d(matrix(1:100, 10, 10), c("Dimension 1", "Dimension 2", "Value"))
 
 library(demography)
 m <- log(fr.mort$rate$female[1:30, 150:160])
@@ -36,4 +40,3 @@ plot3d(m, color.palette = rainbow)
 \author{
 Alexander Dokumentov
 }
-

@@ -4,8 +4,13 @@
 \alias{plot.matrix}
 \title{Presents matrix as a heatmap}
 \usage{
-\method{plot}{matrix}(x, labs = c("X", "Y"), color.palette = c("default",
-  "special"), main = "", ...)
+\method{plot}{matrix}(
+  x,
+  labs = c("X", "Y"),
+  color.palette = c("default", "special"),
+  main = "",
+  ...
+)
 }
 \arguments{
 \item{x}{Matrix to plot.}
@@ -25,8 +30,8 @@ Presents matrix as a heatmap
 \examples{
 \dontrun{
 
-plot(matrix(rnorm(100),10,10), main = "Noise")
-plot(matrix(1:100,10,10), c("Dimension 1", "Dimension 2"), main = "Value")
+plot(matrix(rnorm(100), 10, 10), main = "Noise")
+plot(matrix(1:100, 10, 10), c("Dimension 1", "Dimension 2"), main = "Value")
 
 library(demography)
 m <- log(fr.mort$rate$female[1:30, 150:160])
@@ -38,4 +43,3 @@ plot(m, color.palette = rainbow)
 \author{
 Alexander Dokumentov
 }
-

@@ -5,11 +5,18 @@
 \title{Smooths demographic data using automatically estimated parameters and
 taking into account only significant period and cohort effects}
 \usage{
-signifAutoSmoothAPC(data, p.value = 0.05, cornerLength = 7,
-  lower = c(0.01, 0.01, 0.01, 1, 0.001, 1, 0.001), upper = c(1.2, 1.8, 1.2,
-  12, 0.4, 12, 0.4), init = c(0.1, 0.1, 0.2, 4, 0.001, 4, 0.001),
-  reltol = 0.001, trace = F, control = list(nnzlmax = 1e+06, nsubmax =
-  2e+06, tmpmax = 2e+05), weights = NULL)
+signifAutoSmoothAPC(
+  data,
+  p.value = 0.05,
+  cornerLength = 7,
+  lower = c(0.01, 0.01, 0.01, 1, 0.001, 1, 0.001),
+  upper = c(1.2, 1.8, 1.2, 12, 0.4, 12, 0.4),
+  init = c(0.1, 0.1, 0.2, 4, 0.001, 4, 0.001),
+  reltol = 0.001,
+  trace = F,
+  control = list(nnzlmax = 1e+06, nsubmax = 2e+06, tmpmax = 2e+05),
+  weights = NULL
+)
 }
 \arguments{
 \item{data}{Demographic data (log mortality) presented as a matrix.
@@ -56,11 +63,7 @@ plot(sm)
 plot(sm, "surface")
 plot(sm, "period")
 plot(sm, "cohort")
-
 }
-}
-\author{
-Alexander Dokumentov
 }
 \references{
 \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
@@ -68,4 +71,6 @@ Alexander Dokumentov
 \seealso{
 \code{\link{autoSmoothAPC}}, \code{\link{smoothAPC}}.
 }
-
+\author{
+Alexander Dokumentov
+}

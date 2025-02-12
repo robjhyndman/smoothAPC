@@ -4,9 +4,14 @@
 \alias{plot.smAPC}
 \title{Presents demographic data as a heatmap}
 \usage{
-\method{plot}{smAPC}(x, component = c("all", "surface", "period", "cohort",
-  "residuals", "original"), labs = c("Age", "Time"),
-  color.palette = c("default", "special"), main = "", ...)
+\method{plot}{smAPC}(
+  x,
+  component = c("all", "surface", "period", "cohort", "residuals", "original"),
+  labs = c("Age", "Time"),
+  color.palette = c("default", "special"),
+  main = "",
+  ...
+)
 }
 \arguments{
 \item{x}{Result of smoothing (object of class \code{smAPC}).}
@@ -38,10 +43,8 @@ plot(sm, "cohort")
 plot(sm, "period")
 plot(sm, "residuals")
 plot(sm, "original", main = "Original data")
-
 }
 }
 \author{
 Alexander Dokumentov
 }
-
