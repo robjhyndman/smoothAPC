@@ -21,7 +21,7 @@
 plot_matrix <- function(x, labs = c("X", "Y", "Z"), types = c("2D", "3D"), color.palette = c("default", "special"), ...) {
   if (max(x) > 0 && min(x) < 0) {
     zlim <- c(-max(abs(x)), max(abs(x)))
-    if (class(color.palette) == "function") {
+    if (inherits(color.palette, "function")) {
       palette <- color.palette
     } else {
       palette <- my.colors
@@ -29,9 +29,9 @@ plot_matrix <- function(x, labs = c("X", "Y", "Z"), types = c("2D", "3D"), color
   } else {
     zlim <- c(min(x), max(x))
     palette <- function(n) heat_hcl(n)
-    if (class(color.palette) == "character" && color.palette[1] == "special") {
+    if (inherits(color.palette, "character") && color.palette[1] == "special") {
       palette <- function(n) rainbow(n, start = 0.0, end = 0.7)
-    } else if (class(color.palette) == "function") {
+    } else if (inherits(color.palette, "function")) {
       palette <- color.palette
     }
   }
