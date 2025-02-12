@@ -2,7 +2,8 @@
 % Please edit documentation in R/show.R
 \name{plot.matrix}
 \alias{plot.matrix}
-\title{Presents matrix as a heatmap}
+\alias{plot.smAPC}
+\title{Methods for producing heatmap plots for matrix and smAPC objects.}
 \usage{
 \method{plot}{matrix}(
   x,
@@ -11,33 +12,53 @@
   main = "",
   ...
 )
+
+\method{plot}{smAPC}(
+  x,
+  component = c("all", "surface", "period", "cohort", "residuals", "original"),
+  labs = c("Age", "Time"),
+  color.palette = c("default", "special"),
+  main = "",
+  ...
+)
 }
 \arguments{
-\item{x}{Matrix to plot.}
+\item{x}{Either a matrix or the result of fitting a smoothed demographic model (object of class \code{smAPC}).}
 
 \item{labs}{Vector of labels for X and Y axes.}
 
-\item{color.palette}{Character string \code{"default"} or \code{"special"} or a function accepting one argument and returning a color palette
+\item{color.palette}{Character string \code{"default"} or \code{"special"}
+or a function accepting one argument and returning a color palette
 (for example \code{\link[grDevices]{rainbow}}).}
 
 \item{main}{Title for the plot.}
 
 \item{...}{Other parameters. They are currently ignored.}
+
+\item{component}{Character string specifying which component to plot.}
 }
 \description{
-Presents matrix as a heatmap
+Displays a matrix or an estimated demographic model of class \code{smAPC} as a heatmap.
 }
 \examples{
-\dontrun{
-
 plot(matrix(rnorm(100), 10, 10), main = "Noise")
 plot(matrix(1:100, 10, 10), c("Dimension 1", "Dimension 2"), main = "Value")
 
-library(demography)
-m <- log(fr.mort$rate$female[1:30, 150:160])
+m <- log(demography::fr.mort$rate$female[1:30, 150:160])
 plot(m)
 plot(m, color.palette = "special")
 plot(m, color.palette = rainbow)
+
+\dontrun{
+m <- log(demography::fr.mort$rate$female[1:30, 150:160])
+sm <- autoSmoothAPC(m)
+
+plot(sm)
+plot(sm, "surface")
+plot(sm, "cohort")
+plot(sm, "period")
+plot(sm, "residuals")
+plot(sm, "original", main = "Original data")
 }
 }
 \author{

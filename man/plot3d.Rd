@@ -2,15 +2,66 @@
 % Please edit documentation in R/show.R
 \name{plot3d}
 \alias{plot3d}
-\title{Presents data as a 3D surface}
+\alias{plot3d.matrix}
+\alias{plot3d.smAPC}
+\title{Methods for producing 3d surface plots}
 \usage{
 plot3d(x, ...)
+
+\method{plot3d}{matrix}(
+  x,
+  labs = c("X", "Y", "Z"),
+  color.palette = c("default", "special"),
+  ...
+)
+
+\method{plot3d}{smAPC}(
+  x,
+  component = c("all", "surface", "period", "cohort", "residuals", "original"),
+  labs = c("Age", "Time", NA),
+  color.palette = c("default", "special"),
+  ...
+)
 }
 \arguments{
-\item{x}{Data to plot.}
+\item{x}{Either a matrix or the result of fitting a smoothed demographic model (object of class \code{smAPC}).}
 
-\item{...}{Other parameters.}
+\item{...}{Other parameters. They are currently ignored.}
+
+\item{labs}{Vector of labels for X, Y and Z axes.}
+
+\item{color.palette}{Character string \code{"default"} or \code{"special"}
+or a function accepting one argument and returning a color palette
+(for example \code{\link[grDevices]{rainbow}}).}
+
+\item{component}{Character string specifying which component to plot.}
 }
 \description{
-Presents data as a 3D surface
+Plots a matrix or an estimated demographic model of class \code{smAPC} as a 3D surface.
+}
+\examples{
+\dontrun{
+plot3d(matrix(rnorm(100), 10, 10))
+plot3d(matrix(1:100, 10, 10), c("Dimension 1", "Dimension 2", "Value"))
+
+m <- log(demography::fr.mort$rate$female[1:30, 150:160])
+plot3d(m)
+plot3d(m, color.palette = "special")
+plot3d(m, color.palette = rainbow)
+}
+
+\dontrun{
+m <- log(demography::fr.mort$rate$female[1:30, 150:160])
+sm <- autoSmoothAPC(m)
+
+plot3d(sm)
+plot3d(sm, "surface", color.palette = "special")
+plot3d(sm, "cohort")
+plot3d(sm, "period")
+plot3d(sm, "residuals")
+plot3d(sm, "original", color.palette = rainbow)
+}
+}
+\author{
+Alexander Dokumentov
 }
