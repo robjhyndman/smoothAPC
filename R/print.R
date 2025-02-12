@@ -15,9 +15,8 @@
 
 #' @export
 
-print.smAPC = function(x, ...)
-{
-  translate = list(
+print.smAPC <- function(x, ...) {
+  translate <- list(
     cohortEffect = "Extracted cohort effects",
     original = "Original data",
     parameters = "Estimated parameters",
@@ -25,8 +24,9 @@ print.smAPC = function(x, ...)
     yearsEffect = "Extracted period effects"
   )
   cat("Object of class smAPC with components:")
-  for(component in sort(ls(x))) {
-    cat("\n\t"); cat(translate[[component]])
+  for (component in sort(ls(x))) {
+    cat("\n\t")
+    cat(translate[[component]])
   }
   return(invisible(x))
 }
