@@ -56,15 +56,14 @@ estPar <- function(data,
                    control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000),
                    weights = NULL) {
   counter <- 0
-
   f <- function(x) {
     if (trace) {
       print("Function f(x). x:")
       print(x)
     } else {
-      counter <<- (counter + 1) %% 4
-      cat("\r")
-      cat(paste0(c("\\", "|", "/", "-")[counter + 1], "   "))
+      #counter <<- counter + 1
+      #cat("\r")
+      #cat(paste0(c("\\", "|", "/", "-")[(counter %%  4) + 1], "   "))
     }
     if (length(x) != length(lower)) stop("Error: length(x) != length(lower)")
     xx <- pmin(pmax(x, lower), upper)
@@ -123,8 +122,8 @@ estAA <- function(data,
   cv <- 0
   for (i in seq_along(lambdas)) {
     if (!trace) {
-      cat("\r ")
-      cat(paste0(c("\\", "|", "/", "-")[i %% 4 + 1], "   "))
+      #cat("\r ")
+      #cat(paste0(c("\\", "|", "/", "-")[i %% 4 + 1], "   "))
     }
     cv[i] <- smoothCv(smoothAPC.wrapper,
       data = data,
@@ -150,8 +149,8 @@ estYY <- function(data,
   cv <- 0
   for (i in seq_along(lambdas)) {
     if (!trace) {
-      cat("\r ")
-      cat(paste0(c("\\", "|", "/", "-")[i %% 4 + 1], "   "))
+      #cat("\r ")
+      #cat(paste0(c("\\", "|", "/", "-")[i %% 4 + 1], "   "))
     }
     cv[i] <- smoothCv(smoothAPC.wrapper,
       data = data,
