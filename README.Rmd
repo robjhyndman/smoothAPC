@@ -1,0 +1,49 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# smoothAPC
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of smoothAPC is to model mortality rates as the sum of four components: a smooth bivariate function of age and time, smooth one-dimensional cohort effects, smooth one-dimensional period effects, and random errors. The model uses bivariate thin plate splines, bivariate lasso-type regularization, and allows for both period and cohort effects.
+
+## Installation
+
+You can install the **stable** version from
+[CRAN](https://cran.r-project.org/package=smoothAPC):
+
+```r
+pak::pak("smoothAPC")
+```
+
+You can install the development version of smoothAPC from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("robjhyndman/smoothAPC")
+```
+
+## Example
+
+```{r example}
+library(smoothAPC)
+m <- log(demography::fr.mort$rate$female[1:30, 150:160])
+plot(m)
+sm <- autoSmoothAPC(m)
+plot(sm)
+plot(sm, "period")
+plot(sm, "cohort")
+```

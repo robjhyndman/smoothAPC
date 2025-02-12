@@ -1,0 +1,34 @@
+url: https://pkg.robjhyndman.com/smoothAPC/
+template:
+  bootstrap: 5
+  theme: tango
+  bootswatch: flatly
+  bslib:
+    base_font: {google: "Fira Sans"}
+    heading_font: {google: "Fira Sans"}
+    code_font: "Hack, mono"
+    primary: "#234460"
+    link-color: "#234460"
+  includes:
+    in_header: <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hack-font@3/build/web/hack-subset.css">
+
+authors:
+  Rob Hyndman:
+    href: http://robjhyndman.com
+
+navbar:
+  type: light
+
+reference:
+  - title: Modelling functions
+    contents:
+      - smoothAPC
+      - autoSmoothAPC
+      - signifAutoSmoothAPC
+  - title: Plotting functions
+    contents:
+      - plot.smAPC
+      - plot.matrix
+      - plot3d
+      - plot3d.smAPC
+      - plot3d.matrix
