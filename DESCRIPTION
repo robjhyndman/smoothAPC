@@ -1,6 +1,6 @@
 Package: smoothAPC
-Version: 0.3
-Date: 2017-09-14
+Version: 0.3.0.9000
+Date: 2025-02-12
 Title: Smoothing of Two-Dimensional Demographic Data, Optionally Taking into
     Account Period and Cohort Effects
 Authors@R: c(
