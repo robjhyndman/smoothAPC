@@ -1,7 +1,7 @@
 #' @importFrom quantreg rq.fit.sfn
 #' @importFrom stats t.test
 #' @importFrom SparseM as.matrix.csr
-
+#' @importFrom compiler cmpfun
 
 append <- compiler::cmpfun(function(env, val, i, j) {
   b <- env$l + 1L
