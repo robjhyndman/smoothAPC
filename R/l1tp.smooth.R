@@ -383,7 +383,7 @@ l1tp.smooth.demogdata.nc <- function(data, lambda = 1, lambdaaa = 1, lambdayy = 
 #' plot(sm, "original")
 #' plot(sm)
 #' }
-#' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
+#' @references Dokumentov, Alexander, Hyndman, Rob J & Tickle, Leonie (2018) Bivariate smoothing of mortality surfaces with cohort and period ridges, *Stat* 7:e199, <https://robjhyndman.com/publications/mortality-smoothing/>
 #' @author Alexander Dokumentov
 #' @seealso \code{\link{autoSmoothAPC}}, \code{\link{signifAutoSmoothAPC}}.
 #' @export

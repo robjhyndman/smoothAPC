@@ -34,7 +34,7 @@ test_that("Testing autoSmoothAPC on linear data with noise, effects = TRUE", {
 
 test_that("Testing autoSmoothAPC on linear data with noise, preiod and cohort effects, effects = TRUE", {
   sm <- autoSmoothAPC(m + coh + per + err, effects = TRUE)
-  all.equal(sm$result, m, tolerance = 1e-7, check.attributes = F)
-  all.equal(sm$yearsEffect, per, tolerance = 1e-7, check.attributes = F)
-  all.equal(sm$cohortEffect, coh, tolerance = 1e-7, check.attributes = F)
+  all.equal(sm$result, m, tolerance = 1e-7, check.attributes = FALSE)
+  all.equal(sm$yearsEffect, per, tolerance = 1e-7, check.attributes = FALSE)
+  all.equal(sm$cohortEffect, coh, tolerance = 1e-7, check.attributes = FALSE)
 })

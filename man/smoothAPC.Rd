@@ -73,7 +73,7 @@ plot(sm)
 }
 }
 \references{
-\url{http://robjhyndman.com/working-papers/mortality-smoothing/}
+Dokumentov, Alexander, Hyndman, Rob J & Tickle, Leonie (2018) Bivariate smoothing of mortality surfaces with cohort and period ridges, \emph{Stat} 7:e199, \url{https://robjhyndman.com/publications/mortality-smoothing/}
 }
 \seealso{
 \code{\link{autoSmoothAPC}}, \code{\link{signifAutoSmoothAPC}}.

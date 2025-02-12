@@ -38,7 +38,7 @@ smoothAPC.wrapper <- function(...) {
 # parameters <- estPar(m)
 #
 # }
-# @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
+# @references Dokumentov, Alexander, Hyndman, Rob J & Tickle, Leonie (2018) Bivariate smoothing of mortality surfaces with cohort and period ridges, *Stat* 7:e199, <https://robjhyndman.com/publications/mortality-smoothing/>
 # @author Alexander Dokumentov
 # @export
 
@@ -52,7 +52,7 @@ estPar <- function(data,
                    upper = head(c(1.2, 1.8, 1.2, 12, 0.4, 12, 0.4), 3 + effects * 4),
                    init = head(c(0.1, 0.1, 0.2, 4, 0.001, 4, 0.001), 3 + effects * 4),
                    reltol = 0.001,
-                   trace = F,
+                   trace = FALSE,
                    control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000),
                    weights = NULL) {
   counter <- 0
@@ -202,7 +202,7 @@ estYY <- function(data,
 #' plot(sm, "period")
 #' plot(sm, "cohort")
 #' }
-#' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
+#' @references Dokumentov, Alexander, Hyndman, Rob J & Tickle, Leonie (2018) Bivariate smoothing of mortality surfaces with cohort and period ridges, *Stat* 7:e199, <https://robjhyndman.com/publications/mortality-smoothing/>
 #' @author Alexander Dokumentov
 #' @seealso \code{\link{smoothAPC}} and \code{\link{signifAutoSmoothAPC}}. The latter might give slightly better performance.
 #' @export
@@ -217,7 +217,7 @@ autoSmoothAPC <- function(data,
                           init = head(c(0.1, 0.1, 0.2, 4, 0.001, 4, 0.001), 3 + effects * 4),
                           reltol = 0.001,
                           parameters = NULL,
-                          trace = F,
+                          trace = FALSE,
                           control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000),
                           weights = NULL) {
   if (missing(parameters)) {
@@ -315,7 +315,7 @@ getAffected <- function(resid, p.value = 0.05) {
 #' plot(sm, "period")
 #' plot(sm, "cohort")
 #' }
-#' @references \url{http://robjhyndman.com/working-papers/mortality-smoothing/}
+#' @references Dokumentov, Alexander, Hyndman, Rob J & Tickle, Leonie (2018) Bivariate smoothing of mortality surfaces with cohort and period ridges, *Stat* 7:e199, <https://robjhyndman.com/publications/mortality-smoothing/>
 #' @author Alexander Dokumentov
 #' @seealso \code{\link{autoSmoothAPC}}, \code{\link{smoothAPC}}.
 #' @export
@@ -327,7 +327,7 @@ signifAutoSmoothAPC <- function(data,
                                 upper = c(1.2, 1.8, 1.2, 12, 0.4, 12, 0.4),
                                 init = c(0.1, 0.1, 0.2, 4, 0.001, 4, 0.001),
                                 reltol = 0.001,
-                                trace = F,
+                                trace = FALSE,
                                 control = list(nnzlmax = 1000000, nsubmax = 2000000, tmpmax = 200000),
                                 weights = NULL) {
   lambdayy <- estYY(data,
@@ -361,7 +361,7 @@ signifAutoSmoothAPC <- function(data,
     lambdaaa = lambdaYearsEffect,
     lambdayy = 0,
     lambdaay = 0,
-    effects = F,
+    effects = FALSE,
     control = control,
     weights = NULL
   )

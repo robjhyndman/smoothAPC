@@ -13,7 +13,7 @@ signifAutoSmoothAPC(
   upper = c(1.2, 1.8, 1.2, 12, 0.4, 12, 0.4),
   init = c(0.1, 0.1, 0.2, 4, 0.001, 4, 0.001),
   reltol = 0.001,
-  trace = F,
+  trace = FALSE,
   control = list(nnzlmax = 1e+06, nsubmax = 2e+06, tmpmax = 2e+05),
   weights = NULL
 )
@@ -66,7 +66,7 @@ plot(sm, "cohort")
 }
 }
 \references{
-\url{http://robjhyndman.com/working-papers/mortality-smoothing/}
+Dokumentov, Alexander, Hyndman, Rob J & Tickle, Leonie (2018) Bivariate smoothing of mortality surfaces with cohort and period ridges, \emph{Stat} 7:e199, \url{https://robjhyndman.com/publications/mortality-smoothing/}
 }
 \seealso{
 \code{\link{autoSmoothAPC}}, \code{\link{smoothAPC}}.

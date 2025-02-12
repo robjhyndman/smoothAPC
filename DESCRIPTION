@@ -3,27 +3,29 @@ Version: 0.3.0.9000
 Date: 2025-02-12
 Title: Smoothing of Two-Dimensional Demographic Data, Optionally Taking into
     Account Period and Cohort Effects
+Description: Mortality rates are modelled as the sum of four components: a smooth bivariate function of age and time, smooth one-dimensional cohort effects, smooth one-dimensional period effects, and random errors. The model uses bivariate thin plate splines, bivariate lasso-type regularization, and allows for both period and cohort effects.
 Authors@R: c(
-  person("Alexander", "Dokumentov", role = c("aut","cph"), comment = c(ORCID = "0000-0003-0478-0983")),
+  person("Alexander", "Dokumentov", role = "aut", comment = c(ORCID = "0000-0003-0478-0983")),
   person("Rob", "Hyndman", email="Rob.Hyndman@monash.edu", role=c("aut", "cre"), comment = c(ORCID = "0000-0002-2140-5352"))
   )
 Depends:
-    R (>= 3.2.2)
+  R (>= 3.2.2)
 Imports:
-    quantreg,
-    SparseM,
-    compiler,
-    lmtest,
-    stats,
-    rgl,
-    colorspace,
-    methods
-Description: Mortality rates are modelled as the sum of four components; a smooth bivariate function of age and time, smooth one-dimensional cohort effects, smooth one-dimensional period effects, and random errors. The model uses bivariate thin plate splines, bivariate lasso-type regularization, and allows for both period and cohort effects.
-License: GPL (>= 2)
-URL: https://github.com/robjhyndman/smoothAPC
+  colorspace,
+  compiler,
+  lmtest,
+  methods,
+  quantreg,
+  rgl,
+  SparseM,
+  stats
+Suggests:
+  testthat,
+  demography
+URL: https://pkg.robjhyndman.com/smoothAPC/, https://github.com/robjhyndman/smoothAPC
+BugReports: https://github.com/robjhyndman/smoothAPC/issues
+License: GPL-3
 LazyData: true
 RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
-Suggests:
-    testthat,
-    demography
