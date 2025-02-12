@@ -13,7 +13,6 @@ Depends:
 Imports:
   colorspace,
   compiler,
-  lmtest,
   methods,
   quantreg,
   rgl,
@@ -25,7 +24,6 @@ Suggests:
 URL: https://pkg.robjhyndman.com/smoothAPC/, https://github.com/robjhyndman/smoothAPC
 BugReports: https://github.com/robjhyndman/smoothAPC/issues
 License: GPL-3
-LazyData: true
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
