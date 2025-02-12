@@ -165,14 +165,14 @@ estYY <- function(data,
   return(lambdas[which.min(cv)])
 }
 
-#' Smooths demographic data using automatically estimated parameters and optionally
-#' taking into account period and cohort effects
+#' Fit an automatically chosen smooth APC model
 #'
-#' If period and cohort effects are taken into account (effects = TRUE) the method uses all
-#' available years and diagonals for estimation of the period and cohort effects.
+#' Smooths demographic data using automatically estimated parameters and optionally
+#' taking into account period and cohort effects (when effects = TRUE). All
+#' available years and diagonals are used for estimation of the period and cohort effects.
 #'
 #' @param data Demographic data (log mortality) presented as a matrix.
-#' Row numbers represent ages and column numbers represet time.
+#' Row numbers represent ages and column numbers represent time.
 #' @param effects Controls if the cohort and period effects are taken into account.
 #' @param cornerLength Sets the smallest length of a diagonal to be considered for cohort effects.
 #' @param affdDiagonals Diagonals to be used for cohort effects.
@@ -186,15 +186,13 @@ estYY <- function(data,
 #' @param trace Controls if tracing is on.
 #' @param control The control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function.
 #' @param weights Define how much every observation effect the resulting smooth surface.
-#' The parameter must have same dimentions as \code{data} parameter.
+#' The parameter must have same dimensions as \code{data} parameter.
 #' Weights can be set to reciprocal of estimated standard deviation of the data.
 #' @return A list of four components: smooth surface, period effects, cohort effects and parameters
 #' used for smoothing (passed as a parameter or estimated).
 #' @examples
 #' \dontrun{
-#'
-#' library(demography)
-#' m <- log(fr.mort$rate$female[1:30, 150:160])
+#' m <- log(demography::fr.mort$rate$female[1:30, 150:160])
 #' plot(m)
 #' sm <- autoSmoothAPC(m)
 #' plot(sm)
@@ -279,15 +277,16 @@ getAffected <- function(resid, p.value = 0.05) {
 }
 
 
-#' Smooths demographic data using automatically estimated parameters and
-#' taking into account only significant period and cohort effects
+#' Fit an automatically chosen smooth APC model using a heuristic procedure
 #'
-#' It is a heuristic procedure which tries to figure out positions of
+#' Smooths demographic data using automatically estimated parameters
+#' taking into account significant period and cohort effects.
+#' It is a heuristic procedure which tries to figure out the positions of
 #' period and cohort effects in the data. It also uses a few steps to estimate
-#' model's parameters. The procedure is supposed to outperform \code{\link{autoSmoothAPC}} slightly.
+#' model's parameters. The procedure slightly outperforms \code{\link{autoSmoothAPC}}.
 #'
 #' @param data Demographic data (log mortality) presented as a matrix.
-#' Row numbers represent ages and column numbers represet time.
+#' Row numbers represent ages and column numbers represent time.
 #' @param p.value P-value used to test the period and the cohort effects for significance.
 #' The lower the value the fewer diagonals and years will be used to find cohort and period effects.
 #' @param cornerLength Minimal length of a diagonal to be considered for cohort effects.
@@ -298,15 +297,13 @@ getAffected <- function(resid, p.value = 0.05) {
 #' @param trace Controls if tracing is on.
 #' @param control The control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function.
 #' @param weights Define how much every observation effect the resulting smooth surface.
-#' The parameter must have same dimentions as \code{data} parameter.
+#' The parameter must have same dimensions as \code{data} parameter.
 #' Weights can be set to reciprocal of estimated standard deviation of the data.
 #' @return A list of six components: smooth surface, period effects, cohort effects, parameters
 #' used for smoothing, diagonals used for cohort effects and years used for period effects.
 #' @examples
 #' \dontrun{
-#'
-#' library(demography)
-#' m <- log(fr.mort$rate$female[1:30, 120:139])
+#' m <- log(demography::fr.mort$rate$female[1:30, 120:139])
 #' plot(m)
 #' sm <- signifAutoSmoothAPC(m)
 #' plot(sm)

@@ -2,8 +2,7 @@
 % Please edit documentation in R/auto.l1tp.smooth.R
 \name{autoSmoothAPC}
 \alias{autoSmoothAPC}
-\title{Smooths demographic data using automatically estimated parameters and optionally
-taking into account period and cohort effects}
+\title{Fit an automatically chosen smooth APC model}
 \usage{
 autoSmoothAPC(
   data,
@@ -23,7 +22,7 @@ autoSmoothAPC(
 }
 \arguments{
 \item{data}{Demographic data (log mortality) presented as a matrix.
-Row numbers represent ages and column numbers represet time.}
+Row numbers represent ages and column numbers represent time.}
 
 \item{effects}{Controls if the cohort and period effects are taken into account.}
 
@@ -49,7 +48,7 @@ The first diagonal is at the bottom left corner of the data matrix (maximal age 
 \item{control}{The control data passed directly to \code{\link[quantreg]{rq.fit.sfn}} function.}
 
 \item{weights}{Define how much every observation effect the resulting smooth surface.
-The parameter must have same dimentions as \code{data} parameter.
+The parameter must have same dimensions as \code{data} parameter.
 Weights can be set to reciprocal of estimated standard deviation of the data.}
 }
 \value{
@@ -57,14 +56,13 @@ A list of four components: smooth surface, period effects, cohort effects and pa
 used for smoothing (passed as a parameter or estimated).
 }
 \description{
-If period and cohort effects are taken into account (effects = TRUE) the method uses all
-available years and diagonals for estimation of the period and cohort effects.
+Smooths demographic data using automatically estimated parameters and optionally
+taking into account period and cohort effects (when effects = TRUE). All
+available years and diagonals are used for estimation of the period and cohort effects.
 }
 \examples{
 \dontrun{
-
-library(demography)
-m <- log(fr.mort$rate$female[1:30, 150:160])
+m <- log(demography::fr.mort$rate$female[1:30, 150:160])
 plot(m)
 sm <- autoSmoothAPC(m)
 plot(sm)

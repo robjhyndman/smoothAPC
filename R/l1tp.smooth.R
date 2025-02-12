@@ -353,6 +353,8 @@ l1tp.smooth.demogdata.nc <- function(data, lambda = 1, lambdaaa = 1, lambdayy = 
   return(result)
 }
 
+#' Fit a specified smooth APC model
+#'
 #' Smooths demographic data optionally taking into account period and cohort effects
 #'
 #' @param data Demographic data (log mortality) presented as a matrix.
@@ -375,14 +377,10 @@ l1tp.smooth.demogdata.nc <- function(data, lambda = 1, lambdaaa = 1, lambdayy = 
 #' Weights can be set to reciprocal of estimated standard deviation of the data.
 #' @return List of three components: smooth surface, period effects, cohort effects.
 #' @examples
-#' \dontrun{
-#'
-#' library(demography)
-#' m <- log(fr.mort$rate$female[1:30, 150:160])
+#' m <- log(demography::fr.mort$rate$female[1:30, 150:160])
 #' sm <- smoothAPC(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
 #' plot(sm, "original")
 #' plot(sm)
-#' }
 #' @references Dokumentov, Alexander, Hyndman, Rob J & Tickle, Leonie (2018) Bivariate smoothing of mortality surfaces with cohort and period ridges, *Stat* 7:e199, <https://robjhyndman.com/publications/mortality-smoothing/>
 #' @author Alexander Dokumentov
 #' @seealso \code{\link{autoSmoothAPC}}, \code{\link{signifAutoSmoothAPC}}.

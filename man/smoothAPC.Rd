@@ -2,7 +2,7 @@
 % Please edit documentation in R/l1tp.smooth.R
 \name{smoothAPC}
 \alias{smoothAPC}
-\title{Smooths demographic data optionally taking into account period and cohort effects}
+\title{Fit a specified smooth APC model}
 \usage{
 smoothAPC(
   data,
@@ -63,14 +63,10 @@ List of three components: smooth surface, period effects, cohort effects.
 Smooths demographic data optionally taking into account period and cohort effects
 }
 \examples{
-\dontrun{
-
-library(demography)
-m <- log(fr.mort$rate$female[1:30, 150:160])
+m <- log(demography::fr.mort$rate$female[1:30, 150:160])
 sm <- smoothAPC(m, lambdaaa = 0.2, lambdayy = 0.1, lambdaay = 0.4, effects = FALSE)
 plot(sm, "original")
 plot(sm)
-}
 }
 \references{
 Dokumentov, Alexander, Hyndman, Rob J & Tickle, Leonie (2018) Bivariate smoothing of mortality surfaces with cohort and period ridges, \emph{Stat} 7:e199, \url{https://robjhyndman.com/publications/mortality-smoothing/}
