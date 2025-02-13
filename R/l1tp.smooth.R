@@ -328,11 +328,9 @@ l1tp.smooth.demogdata.nc <- function(data, lambda = 1, lambdaaa = 1, lambdayy = 
   targetNoNA <- target[noNA]
   smNoNA <- sm[noNA, ]
 
-  #   timeFit = system.time({
-  suppressWarnings({
+  #suppressWarnings({
     fit <- rq.fit.sfn(smNoNA, targetNoNA, control = control)
-  })
-  #   }); print("timeFit:"); print(timeFit)
+  #})
 
   result <- l1tp.unTargetVector(fit$coef, dim(data))
   rownames(result) <- rownames(data)
