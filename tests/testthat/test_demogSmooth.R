@@ -5,6 +5,7 @@ colnames(m) <- 1980:1989
 
 test_that("Testing smoothAPC on linear data w/o ridges, effects = FALSE", {
   sm <- smoothAPC(m, effects = FALSE)
+  expect_equivalent(sm$original, m)
   expect_equivalent(sm$result, m)
   expect_null(sm$yearsEffect)
   expect_null(sm$cohortEffect)
@@ -38,6 +39,7 @@ test_that("Testing smoothAPC on nonlinear data with NAs with weights", {
   mm[5, 5] <- NA
   mm[7, 7] <- NA
   smm <- smoothAPC(mm, effects = FALSE, weights = weights)
+  expect_true(class(smm) == "smAPC")
 })
 
 # Matrix with a cohort effect
